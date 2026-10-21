@@ -1742,7 +1742,7 @@
     .viewer-body img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .viewer-note { color: #ffffff; font-family: "Manrope", sans-serif; }
     .toast {
-      position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 50; transform: translateX(-50%);
+      position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 50; transform: translateX(-50%); pointer-events: none;
       width: max-content; max-width: calc(100% - 32px); padding: 12px 16px; border-radius: 12px;
       background: #111111; color: #ffffff; font-family: "Manrope", sans-serif; font-weight: 500; font-size: 14px; line-height: 18px;
     }
@@ -1764,7 +1764,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261021-e60da14a";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261021-1ba014e7";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -3395,7 +3395,9 @@
       else toast(error.message);
     }
 
-    function persistStep(step) {
+    // strict: the user pressed «Далее», so a server rejection sends them back to fix the step.
+    // Otherwise (back, leave, background) an unfinished step is fine: the server stores it anyway.
+    function persistStep(step, strict) {
       var d = state.draft;
       var fields = d && draftFields(d, step);
       if (!fields) return;
@@ -3405,6 +3407,8 @@
         var current = findApp(id);
         if (current) putApp(Object.assign({}, current, fields, { requiredDocs: result.item.requiredDocs }));
       }, function (error) {
+        var unfinished = error.code === 'VALIDATION' || error.code === 'DUPLICATE';
+        if (unfinished && !strict) return;
         if (state.draft && state.draft.id === id) handleSaveError(step, error);
       });
     }
@@ -3640,7 +3644,7 @@
           if (problem) return showError(paneError(step), problem);
         }
         state.dirty = false;
-        persistStep(step);
+        persistStep(step, !!next);
         go(stepHash(STEPS[index + (next ? 1 : -1)]));
       });
       $('#wiz-leave').addEventListener('click', function (event) {
@@ -3666,7 +3670,7 @@
             return go(stepHash(STEPS[i]));
           }
         }
-        Object.keys(state.unsaved).forEach(persistStep);
+        Object.keys(state.unsaved).forEach(function (step) { persistStep(step, false); });
         busy(button, state.queue.then(function () { return call('applicationSubmit', [d.id]); }), 'Отправляем…').then(function (result) {
           state.draft = null;
           putApp(result.item);
