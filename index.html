@@ -1764,7 +1764,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261021-49b12bc6";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261021-3b3f036a";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -2402,7 +2402,7 @@
     var ADDRESS_STATUSES = ['accepted', 'departure', 'photo_review', 'photo_rejected', 'approved'];
     var STEPS = ['country', 'passport', 'data', 'docs', 'arrival', 'summary'];
     var ACT_STATUS = { awaiting_signature: 'Ждёт подписи', paying: 'Подписан, ждёт перевода', paid: 'Оплачен' };
-    var ACCRUAL_STATUS = { reserve: 'В резерве', available: 'Можно вывести', in_act: 'В акте', paying: 'Ждёт перевода', paid: 'Выплачено', cancelled: 'Резерв снят' };
+    var ACCRUAL_STATUS = { reserve: 'В резерве', available: 'Можно вывести', in_act: 'В акте', paying: 'Ждёт перевода', paid: 'Выплачено', cancelled: 'Аннулировано' };
     var TRANSPORT = { train: 'Ж/Д', air: 'Авиа', bus: 'Автобус' };
     var DOCS = {
       snils: 'СНИЛС', inn: 'ИНН', relative: 'Данные родственника',
@@ -4020,7 +4020,10 @@
       if (item.status === 'approved' && accrual && !accrual.customerPaid) {
         simple('Оплата заказчика пришла', 'customer_paid', 'Отметить, что заказчик оплатил эту заявку? Отметку нельзя снять.');
       }
-      if (item.status === 'approved' && reserve) withReason('Снять резерв', 'cancel_reserve', null);
+      if (item.status === 'approved' && reserve) {
+        simple('Открыть вывод сейчас', 'release_now', 'Сделать ' + money(accrual.amount) + ' доступными к выводу сразу, не дожидаясь конца резерва' + (accrual.customerPaid ? '' : ' и оплаты заказчика') + '? Рекруту уйдёт письмо, отменить нельзя.');
+        withReason('Аннулировать агентское', 'cancel_reserve', null);
+      }
       if (REMOVABLE.indexOf(item.status) >= 0 && (item.status !== 'approved' || reserve)) withReason('Снять заявку', 'remove', 'remove');
       return h('div', { class: 'admin-actions' }, buttons.concat([reasonBox, err]));
     }
@@ -4033,7 +4036,8 @@
       var ok = h('button', { class: 'admin-go', type: 'button', text: label + ': подтвердить' });
       ok.addEventListener('click', function () { act(action, select ? select.value : '', text.value, ok); });
       var cancel = h('button', { class: 'admin-stop', type: 'button', text: 'Отмена', onclick: function () { box.hidden = true; } });
-      fill(box, [h('h2', { text: label }), select, text, ok, cancel]);
+      var note = action === 'cancel_reserve' ? h('p', { class: 'bank-note', text: 'Агентское по этой заявке сгорит, а заявка станет «Снята». Это не выплата: чтобы деньги стали доступны рекруту, нажмите «Открыть вывод сейчас».' }) : null;
+      fill(box, [h('h2', { text: label }), note, select, text, ok, cancel]);
       box.hidden = false;
       (select || text).focus();
     }
