@@ -1764,7 +1764,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261021-3b3f036a";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261021-e60da14a";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -2434,8 +2434,13 @@
       profile: null,
       questions: null,
       adminRows: null,
+      adminActs: null,
       viewerUrl: '',
-      waiting: null
+      waiting: null,
+      queue: Promise.resolve(),
+      booting: null,
+      unsaved: {},
+      vacancy: null
     };
 
     function readJson(key) {
@@ -2573,15 +2578,97 @@
       writeJson(KEYS.session, { token: token, role: role || 'recruiter' });
     }
 
+    // Screen data lives in memory and in localStorage, so screens paint instantly and refresh quietly.
+    var CACHED = ['directions', 'directionsTitle', 'helpVideoUrl', 'apps', 'profile', 'questions', 'adminRows', 'adminActs'];
+    var persistTimer = 0;
+
+    function cacheKey() {
+      var current = session();
+      return current ? 'yarekrut_cache_' + current.token.slice(0, 16) : '';
+    }
+
+    function remember(values) {
+      Object.keys(values).forEach(function (k) { state[k] = values[k]; });
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(function () {
+        var key = cacheKey();
+        if (!key) return;
+        var data = {};
+        CACHED.forEach(function (k) { data[k] = state[k]; });
+        try { localStorage.setItem(key, JSON.stringify(data)); } catch (error) {}
+      }, 200);
+    }
+
+    function restoreCache() {
+      var key = cacheKey();
+      if (!key) return;
+      var data = readJson(key);
+      if (data) CACHED.forEach(function (k) { if (data[k] != null) state[k] = data[k]; });
+    }
+
     function dropSession() {
       writeJson(KEYS.session, null);
-      state.directions = null;
-      state.apps = null;
+      clearTimeout(persistTimer);
+      Object.keys(localStorage).forEach(function (k) { if (k.indexOf('yarekrut_cache_') === 0) localStorage.removeItem(k); });
+      CACHED.forEach(function (k) { state[k] = null; });
       state.draft = null;
       state.dirty = false;
-      state.profile = null;
-      state.questions = null;
-      state.adminRows = null;
+      state.queue = Promise.resolve();
+    }
+
+    function sameData(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    // All draft writes go through one queue: the order on the server matches the order of taps.
+    function enqueue(task) {
+      var run = state.queue.then(task, task);
+      state.queue = run.then(function () {}, function () {});
+      return run;
+    }
+
+    var PAINTERS = {};
+
+    function repaintCurrent() {
+      var paint = PAINTERS[state.current];
+      if (paint) paint();
+    }
+
+    function bootstrap() {
+      if (state.booting) return state.booting;
+      state.booting = call('bootstrap').then(function (result) {
+        if (result.role === 'admin') {
+          remember({ adminRows: result.adminList, adminActs: result.adminActs });
+        } else {
+          remember({
+            directions: result.directions.items,
+            directionsTitle: result.directions.directionsTitle,
+            helpVideoUrl: result.directions.helpVideoUrl,
+            apps: result.apps,
+            profile: result.profile,
+            questions: result.questions
+          });
+        }
+        state.booting = null;
+        repaintCurrent();
+        return result;
+      }, function (error) {
+        state.booting = null;
+        throw error;
+      });
+      return state.booting;
+    }
+
+    // Refresh one piece of data: reuse a bootstrap already in flight instead of a second request.
+    function refresh(method, args, apply) {
+      if (state.booting) return state.booting.then(function () {});
+      return call(method, args).then(apply);
+    }
+
+    function putApp(item) {
+      var list = (state.apps || []).filter(function (a) { return a.id !== item.id; });
+      list.unshift(item);
+      remember({ apps: list });
     }
 
     function apiError(code, message, extra) {
@@ -2698,27 +2785,29 @@
       });
     }
 
-    function uploadFiles(input, kind, appId, max, status, onDone) {
+    // Returns false when nothing was started; otherwise the upload runs in the background queue.
+    function uploadFiles(input, kind, appId, max, status, onDone, onFail) {
       var files = Array.prototype.slice.call(input.files || []);
       input.value = '';
-      if (!files.length) return;
+      if (!files.length) return false;
       status.classList.remove('is-error');
       if (files.length > max) {
         status.textContent = 'Можно не больше ' + max + ' ' + plural(max, 'файла', 'файлов', 'файлов');
         status.classList.add('is-error');
-        return;
+        return false;
       }
-      status.textContent = 'Готовим ' + (files.length > 1 ? 'файлы' : 'файл') + '…';
+      status.textContent = 'Загружаем…';
       Promise.all(files.map(prepareFile)).then(function (prepared) {
-        status.textContent = 'Загружаем…';
-        return call('fileUpload', [appId, kind, prepared], { timeout: 120000 });
+        return enqueue(function () { return call('fileUpload', [appId, kind, prepared], { timeout: 120000 }); });
       }).then(function (result) {
-        status.textContent = 'Загружено: ' + files.length + ' ' + plural(files.length, 'файл', 'файла', 'файлов');
+        status.textContent = files.length > 1 ? 'загружено: ' + files.length : 'файл загружен';
         onDone(result.item);
       }).catch(function (error) {
         status.textContent = error.message;
         status.classList.add('is-error');
+        if (onFail) onFail(error);
       });
+      return true;
     }
 
     function fileButton(label, fileId) {
@@ -2828,6 +2917,7 @@
       if (spec.guest && current) return go(homeHash(), true);
       if (spec.role && !current) return go('#/', true);
       if (spec.role && spec.role !== current.role) return go(homeHash(), true);
+      state.params = params;
       activate(spec.screen);
       // Loaders live in later <script> blocks, so string names are resolved only when the route runs.
       var load = typeof spec.load === 'string' ? window[spec.load] : spec.load;
@@ -3036,6 +3126,7 @@
               writeJson(KEYS.pending, null);
               if (purpose === 'register') writeJson(KEYS.ref, null);
               saveSession(result.token, result.role);
+              bootstrap().catch(function () {});
               go(result.role === 'admin' ? '#/admin' : '#/vacancies', true);
             })
             .catch(function (error) { showError(err, error); });
@@ -3066,14 +3157,29 @@
 
     <script>
     'use strict';
+    var DOC_SETS = { rf: ['snils', 'inn', 'relative'], foreign: ['migration', 'translation'] };
+    var FILE_KINDS = ['passport', 'snils', 'inn', 'migration', 'translation', 'ticket', 'contract'];
+    var STEP_OF_FILE = { passport: 'passport', snils: 'docs', inn: 'docs', migration: 'docs', translation: 'docs' };
+
     function rememberDirections(result) {
-      state.directions = result.items || [];
-      state.directionsTitle = result.directionsTitle || '';
-      state.helpVideoUrl = result.helpVideoUrl || '';
+      remember({ directions: result.items || [], directionsTitle: result.directionsTitle || '', helpVideoUrl: result.helpVideoUrl || '' });
     }
 
     function findDirection(gid) {
       return (state.directions || []).filter(function (d) { return d.gid === gid; })[0] || null;
+    }
+
+    function findApp(id) {
+      return (state.apps || []).filter(function (a) { return a.id === id; })[0] || null;
+    }
+
+    function newId() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      var b = crypto.getRandomValues(new Uint8Array(16));
+      b[6] = (b[6] & 15) | 64;
+      b[8] = (b[8] & 63) | 128;
+      var hex = Array.prototype.map.call(b, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+      return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' + hex.slice(16, 20) + '-' + hex.slice(20);
     }
 
     function passesFilter(item) {
@@ -3120,15 +3226,13 @@
     }
 
     function loadDirections() {
-      if (state.directions) paintDirections();
+      var cached = !!state.directions;
+      if (cached) paintDirections();
       else setState('direction-state', 'loading');
-      call('directions').then(function (result) {
-        rememberDirections(result);
+      refresh('directions', [], rememberDirections).then(function () {
         if (state.current === 'vacancies') paintDirections();
       }).catch(function (error) {
-        if (error.code === 'AUTH') return;
-        if (state.directions) toast(error.message);
-        else setState('direction-state', 'error', error.message, loadDirections);
+        if (error.code !== 'AUTH' && !state.directions) setState('direction-state', 'error', error.message, loadDirections);
       });
     }
 
@@ -3141,8 +3245,8 @@
       if (item) return paintVacancy(item);
       showDirectionParts(false);
       setState('vacancy-state', 'loading');
-      call('directions').then(function (result) {
-        rememberDirections(result);
+      refresh('directions', [], rememberDirections).then(function () {
+        if (state.current !== 'vacancy') return;
         var found = findDirection(gid);
         if (found) paintVacancy(found);
         else setState('vacancy-state', 'empty', 'Направление не найдено или закрыто для новых заявок');
@@ -3170,79 +3274,177 @@
       $('#dir-sheet-link').href = item.url;
     }
 
+    function allowedOf(direction) {
+      if (!direction || direction.citizenship === 'both') return ['rf', 'foreign'];
+      return [direction.citizenship];
+    }
+
+    function requiredDocsFor(direction, cit) {
+      var base = DOC_SETS[cit === 'foreign' ? 'foreign' : 'rf'];
+      if (!direction || !direction.docs || !direction.docs.length) return base;
+      var picked = base.filter(function (k) { return direction.docs.indexOf(k) >= 0; });
+      return picked.length ? picked : base;
+    }
+
+    // A draft that exists on the phone right away; the server copy is created through the queue.
+    function localDraft(direction) {
+      var allowed = allowedOf(direction);
+      var cit = allowed.length === 1 ? allowed[0] : '';
+      var files = {};
+      FILE_KINDS.forEach(function (k) { files[k] = []; });
+      return {
+        id: newId(), status: 'draft', vacancyId: direction.gid, directionTitle: direction.title, citizenship: cit,
+        passportNumber: '', passportOk: false, fio: '', birthDate: '', age: null, phone: '', military: '', diseases: '',
+        innNumber: '', relativeText: '', fromCity: '', fee: 0, departureOn: '', transport: '', station: '', arrivalAt: '',
+        reasonText: '', created: '', files: files,
+        direction: {
+          gid: direction.gid, title: direction.title, citizenship: direction.citizenship, ageTo: direction.ageTo,
+          agentFee: direction.agentFee, published: direction.published, tickets: direction.tickets,
+          ticketsLabel: direction.ticketsLabel, addressTitle: '', address: '', docs: direction.docs, allowed: allowed
+        },
+        requiredDocs: requiredDocsFor(direction, cit)
+      };
+    }
+
     function stepHash(step) {
       return '#/apply/' + encodeURIComponent(state.draft.id) + '/' + step;
     }
 
-    function stepFields(step) {
-      if (step === 'country') return { citizenship: state.draft.citizenship };
-      if (step === 'passport') return { passportNumber: $('#cand-passport').value, passportOk: $('#passport-ok').checked };
-      if (step === 'data') {
-        return {
-          fio: $('#cand-fio').value,
-          birthDate: $('#cand-birth').value.trim(),
-          phone: $('#cand-phone').value,
-          military: state.draft.military,
-          diseases: $('#cand-ill').value
-        };
-      }
-      if (step === 'docs') {
-        var inn = $('#doc-inn');
-        var relative = $('#doc-relative');
-        return { innNumber: inn ? inn.value : state.draft.innNumber, relativeText: relative ? relative.value : state.draft.relativeText };
-      }
-      if (step === 'arrival') return { fromCity: $('#cand-city').value };
+    function draftFields(d, step) {
+      if (step === 'country') return { citizenship: d.citizenship };
+      if (step === 'passport') return { passportNumber: d.passportNumber, passportOk: d.passportOk };
+      if (step === 'data') return { fio: d.fio, birthDate: d.birthDate, phone: d.phone, military: d.military, diseases: d.diseases };
+      if (step === 'docs') return { innNumber: d.innNumber, relativeText: d.relativeText };
+      if (step === 'arrival') return { fromCity: d.fromCity };
       return null;
     }
 
-    // Lenient save for leaving a step: the server stores the values even if they do not pass the check yet.
-    function saveStep(step, strict) {
-      var fields = stepFields(step);
-      if (!fields || !state.draft) return Promise.resolve(state.draft);
-      state.dirty = false;
-      Object.assign(state.draft, fields);
-      return call('draftSave', [state.draft.id, step, fields]).then(function (result) {
-        state.draft = result.item;
-        return result.item;
+    function readStep(step) {
+      var d = state.draft;
+      if (step === 'passport') {
+        d.passportNumber = $('#cand-passport').value;
+        d.passportOk = $('#passport-ok').checked;
+      }
+      if (step === 'data') {
+        d.fio = $('#cand-fio').value;
+        d.birthDate = $('#cand-birth').value.trim();
+        d.phone = $('#cand-phone').value;
+        d.diseases = $('#cand-ill').value;
+      }
+      if (step === 'docs') {
+        if ($('#doc-inn')) d.innNumber = $('#doc-inn').value;
+        if ($('#doc-relative')) d.relativeText = $('#doc-relative').value;
+      }
+      if (step === 'arrival') d.fromCity = $('#cand-city').value;
+      return draftFields(d, step);
+    }
+
+    function phoneOk(value) {
+      var digits = String(value || '').replace(/\D/g, '');
+      if (digits.length === 11 && (digits.charAt(0) === '8' || digits.charAt(0) === '7')) return true;
+      return digits.length === 10 || (digits.length >= 11 && digits.length <= 15);
+    }
+
+    // Same rules as the server; the server re-checks every step and the final submit anyway.
+    function localStepError(d, step) {
+      if (step === 'country') return allowedOf(d.direction).indexOf(d.citizenship) < 0 ? 'Выберите гражданство кандидата' : '';
+      if (step === 'passport') {
+        var key = String(d.passportNumber || '').toUpperCase().replace(/[^0-9A-ZА-ЯЁ]/g, '');
+        if (d.citizenship === 'rf' && !/^\d{10}$/.test(key)) return 'Серия и номер паспорта РФ — 10 цифр';
+        if (d.citizenship !== 'rf' && (key.length < 5 || key.length > 20)) return 'Укажите серию и номер паспорта';
+        if (!d.files.passport.length) return 'Добавьте фото разворота паспорта';
+        if (!d.passportOk) return 'Подтвердите, что разворот читается';
+        return '';
+      }
+      if (step === 'data') {
+        if (String(d.fio || '').trim().split(/\s+/).length < 2) return 'Укажите ФИО как в паспорте';
+        var age = ageOf(d.birthDate);
+        if (age == null || age < 0) return 'Дата рождения в формате ДД.ММ.ГГГГ';
+        if (age < 18) return 'Кандидату должно быть 18 лет';
+        if (d.direction && d.direction.ageTo && age > d.direction.ageTo) return 'На это направление берут до ' + d.direction.ageTo + ' лет';
+        if (!phoneOk(d.phone)) return 'Укажите телефон кандидата';
+        if (d.military !== 'yes' && d.military !== 'no') return 'Укажите, есть ли трудовая книжка';
+        return '';
+      }
+      if (step === 'docs') {
+        for (var i = 0; i < d.requiredDocs.length; i++) {
+          var doc = d.requiredDocs[i];
+          if (doc === 'inn' && !/^\d{12}$/.test(String(d.innNumber || '').replace(/\D/g, ''))) return 'ИНН — 12 цифр';
+          if (doc === 'relative' && String(d.relativeText || '').trim().length < 5) return 'Впишите данные родственника';
+          if (doc !== 'inn' && doc !== 'relative' && !d.files[doc].length) return 'Прикрепите все документы этого шага';
+        }
+      }
+      return '';
+    }
+
+    function paneError(step) {
+      return $('.wiz-error', $('.wiz-pane[data-step="' + step + '"]'));
+    }
+
+    function handleSaveError(step, error) {
+      if (error.code === 'AUTH') return;
+      if (error.code === 'NETWORK' || error.code === 'TIMEOUT' || error.code === 'HTTP' || error.code === 'SERVER' || error.code === 'BUSY') {
+        state.unsaved[step] = true;
+        toast('Нет связи с кабинетом. Черновик сохранится, когда связь вернётся.');
+        return;
+      }
+      var target = error.step || step;
+      if (state.current === 'apply' && state.applyStep === target) return showError(paneError(target), error.message);
+      state.wizError = { step: target, message: error.message };
+      if (state.current === 'apply' && state.draft) go(stepHash(target));
+      else toast(error.message);
+    }
+
+    function persistStep(step) {
+      var d = state.draft;
+      var fields = d && draftFields(d, step);
+      if (!fields) return;
+      var id = d.id;
+      delete state.unsaved[step];
+      enqueue(function () { return call('draftSave', [id, step, fields]); }).then(function (result) {
+        var current = findApp(id);
+        if (current) putApp(Object.assign({}, current, fields, { requiredDocs: result.item.requiredDocs }));
       }, function (error) {
-        if (!strict && (error.code === 'VALIDATION' || error.code === 'DUPLICATE')) return state.draft;
-        throw error;
+        if (state.draft && state.draft.id === id) handleSaveError(step, error);
       });
     }
 
     function flushDraft(beacon) {
       if (!state.dirty || !state.draft || state.current !== 'apply') return;
-      var fields = stepFields(state.applyStep);
+      var step = state.applyStep;
+      var fields = readStep(step);
       var current = session();
       state.dirty = false;
       if (!fields || !current) return;
-      Object.assign(state.draft, fields);
-      var body = JSON.stringify({ method: 'draftSave', args: [current.token, state.draft.id, state.applyStep, fields] });
-      if (beacon && navigator.sendBeacon) navigator.sendBeacon(API_URL, new Blob([body], { type: 'text/plain;charset=utf-8' }));
-      else call('draftSave', [state.draft.id, state.applyStep, fields]).catch(function () {});
+      if (beacon && navigator.sendBeacon) {
+        navigator.sendBeacon(API_URL, new Blob([JSON.stringify({ method: 'draftSave', args: [current.token, state.draft.id, step, fields] })], { type: 'text/plain;charset=utf-8' }));
+      } else {
+        persistStep(step);
+      }
     }
 
     function loadApply(id, step) {
       if (STEPS.indexOf(step) < 0) return go('#/apply/' + encodeURIComponent(id) + '/country', true);
-      var ready;
-      if (state.draft && state.draft.id === id) {
-        ready = Promise.resolve(state.draft);
-      } else {
-        $all('.wiz-pane').forEach(function (pane) { pane.hidden = true; });
-        setState('apply-state', 'loading');
-        ready = call('myApplication', [id]).then(function (result) { return result.item; });
-      }
-      ready.then(function (item) {
+      var known = state.draft && state.draft.id === id ? state.draft : findApp(id);
+      if (known) return openWizard(known, step);
+      $all('.wiz-pane').forEach(function (pane) { pane.hidden = true; });
+      setState('apply-state', 'loading');
+      call('myApplication', [id]).then(function (result) {
         setState('apply-state');
-        if (item.status !== 'draft') {
-          toast('Заявка уже отправлена');
-          return go('#/request/' + encodeURIComponent(id), true);
-        }
-        state.draft = item;
-        paintWizard(step);
+        if (state.current === 'apply') openWizard(result.item, step);
       }).catch(function (error) {
         if (error.code !== 'AUTH') setState('apply-state', 'error', error.message, function () { loadApply(id, step); });
       });
+    }
+
+    function openWizard(item, step) {
+      if (item.status !== 'draft') {
+        toast('Заявка уже отправлена');
+        return go('#/request/' + encodeURIComponent(item.id), true);
+      }
+      setState('apply-state');
+      state.draft = item;
+      paintWizard(step);
     }
 
     function docsText(d) {
@@ -3265,13 +3467,12 @@
       state.wizError = null;
       var title = d.direction ? d.direction.title : d.directionTitle;
       $all('.screen-apply .ban-title').forEach(function (el) { el.textContent = d.citizenship === 'foreign' ? 'Иностранный гражданин' : 'Гражданин РФ'; });
-      var sub = 'Потребуется ' + docsText(d);
-      $('.wiz-pane[data-step="passport"] .ban-sub').textContent = sub;
+      $('.wiz-pane[data-step="passport"] .ban-sub').textContent = 'Потребуется ' + docsText(d);
       $('.wiz-pane[data-step="docs"] .ban-sub').textContent = docsText(d);
       $('[data-summary-sub]').textContent = title;
 
       if (step === 'country') {
-        var allowed = d.direction ? d.direction.allowed : ['rf', 'foreign'];
+        var allowed = allowedOf(d.direction);
         $all('.cit', pane).forEach(function (button) {
           var value = button.getAttribute('data-cit');
           button.hidden = allowed.indexOf(value) < 0;
@@ -3283,9 +3484,7 @@
         $('#cand-passport').value = d.passportNumber;
         $('#cand-passport').placeholder = d.citizenship === 'foreign' ? 'Серия и номер' : '4510 123456';
         $('#passport-ok').checked = d.passportOk;
-        var count = d.files.passport.length;
-        $('#passport-note').textContent = count ? 'Загружено: ' + count + ' фото. Нажмите, чтобы заменить' : 'до 2 фото';
-        $('#passport-note').classList.remove('is-error');
+        paintPassportNote();
       }
       if (step === 'data') {
         $('#cand-fio').value = d.fio;
@@ -3299,6 +3498,14 @@
       if (step === 'summary') paintSummary();
     }
 
+    function paintPassportNote() {
+      var note = $('#passport-note');
+      var files = state.draft.files.passport;
+      note.classList.remove('is-error');
+      if (state.uploading === 'passport') note.textContent = 'Загружаем…';
+      else note.textContent = files.length ? 'Загружено: ' + files.length + ' фото. Нажмите, чтобы заменить' : 'до 2 фото';
+    }
+
     function paintMilitary() {
       $all('#mil button').forEach(function (button) {
         var on = button.getAttribute('data-mil') === state.draft.military;
@@ -3307,17 +3514,33 @@
       });
     }
 
+    // The file counts as attached at once; if the upload fails the step gets an error and the user is sent back.
+    function draftUpload(input, kind, max, status) {
+      var d = state.draft;
+      var previous = d.files[kind];
+      var started = uploadFiles(input, kind, d.id, max, status, function (item) {
+        if (state.draft && state.draft.id === d.id) state.draft.files[kind] = item.files[kind];
+        if (state.uploading === kind) state.uploading = '';
+        if (kind === 'passport' && state.current === 'apply' && state.applyStep === 'passport') paintPassportNote();
+        var current = findApp(d.id);
+        if (current) putApp(Object.assign({}, current, { files: item.files }));
+      }, function (error) {
+        if (state.draft && state.draft.id === d.id) state.draft.files[kind] = previous;
+        if (state.uploading === kind) state.uploading = '';
+        handleSaveError(STEP_OF_FILE[kind], error);
+      });
+      if (started) {
+        d.files[kind] = ['pending'];
+        state.uploading = kind;
+      }
+    }
+
     function docUpload(kind, title, optional) {
       var d = state.draft;
       var count = (d.files[kind] || []).length;
       var status = h('span', { text: count ? 'файл загружен' : optional ? 'по желанию' : 'файл не выбран' });
       var input = h('input', { type: 'file', accept: 'image/*,application/pdf' });
-      input.addEventListener('change', function () {
-        uploadFiles(input, kind, d.id, 1, status, function (item) {
-          state.draft.files = item.files;
-          status.textContent = 'файл загружен';
-        });
-      });
+      input.addEventListener('change', function () { draftUpload(input, kind, 1, status); });
       return h('label', { class: 'doc' }, [h('strong', { text: title }), h('span', { class: 'doc-line' }, [h('b', { text: 'Выбрать файлы' }), status]), input]);
     }
 
@@ -3366,6 +3589,24 @@
       ]);
     }
 
+    function startDraft() {
+      var item = state.vacancy;
+      if (!item) return;
+      var draft = localDraft(item);
+      state.draft = draft;
+      putApp(draft);
+      enqueue(function () { return call('draftCreate', [item.gid, draft.id]); }).catch(function (error) {
+        if (error.code === 'AUTH') return;
+        remember({ apps: (state.apps || []).filter(function (a) { return a.id !== draft.id; }) });
+        if (state.draft && state.draft.id === draft.id) {
+          state.draft = null;
+          toast(error.message);
+          go('#/vacancy/' + encodeURIComponent(item.gid), true);
+        }
+      });
+      go('#/apply/' + encodeURIComponent(draft.id) + '/country');
+    }
+
     function bindWizard() {
       var screen = $('.screen-apply');
       screen.addEventListener('input', function () { state.dirty = true; });
@@ -3376,6 +3617,7 @@
         var cit = event.target.closest('[data-cit]');
         if (cit && state.draft) {
           state.draft.citizenship = cit.getAttribute('data-cit');
+          state.draft.requiredDocs = requiredDocsFor(state.draft.direction, state.draft.citizenship);
           paintWizard('country');
           state.dirty = true;
           return;
@@ -3389,40 +3631,48 @@
         }
         var next = event.target.closest('[data-next]');
         var prev = event.target.closest('[data-prev]');
-        if (!next && !prev) return;
+        if ((!next && !prev) || !state.draft) return;
         var step = state.applyStep;
         var index = STEPS.indexOf(step);
-        var err = $('.wiz-error', $('.wiz-pane[data-step="' + step + '"]'));
-        showError(err, '');
-        busy(next || prev, saveStep(step, !!next), next ? 'Сохраняем…' : null).then(function () {
-          go(stepHash(STEPS[index + (next ? 1 : -1)]));
-        }).catch(function (error) { showError(err, error); });
+        readStep(step);
+        if (next) {
+          var problem = localStepError(state.draft, step);
+          if (problem) return showError(paneError(step), problem);
+        }
+        state.dirty = false;
+        persistStep(step);
+        go(stepHash(STEPS[index + (next ? 1 : -1)]));
       });
       $('#wiz-leave').addEventListener('click', function (event) {
         event.preventDefault();
-        var gid = state.draft ? state.draft.vacancyId : '';
-        saveStep(state.applyStep, false).then(function () {
-          state.apps = null;
-          go(gid ? '#/vacancy/' + encodeURIComponent(gid) : '#/requests');
-        }).catch(function (error) { toast(error.message); });
+        if (!state.draft) return go('#/requests');
+        readStep(state.applyStep);
+        state.dirty = false;
+        persistStep(state.applyStep);
+        go(state.draft.vacancyId ? '#/vacancy/' + encodeURIComponent(state.draft.vacancyId) : '#/requests');
       });
       $('#passport-file').addEventListener('change', function () {
-        var note = $('#passport-note');
-        uploadFiles(this, 'passport', state.draft.id, 2, note, function (item) {
-          state.draft.files = item.files;
-          note.textContent = 'Загружено: ' + item.files.passport.length + ' фото. Нажмите, чтобы заменить';
-        });
+        draftUpload(this, 'passport', 2, $('#passport-note'));
       });
       $('#apply-send').addEventListener('click', function () {
         var button = this;
-        var err = $('.wiz-error', $('.wiz-pane[data-step="summary"]'));
+        var d = state.draft;
+        var err = paneError('summary');
         showError(err, '');
-        busy(button, call('applicationSubmit', [state.draft.id]), 'Отправляем…').then(function (result) {
+        for (var i = 0; i < STEPS.length - 1; i++) {
+          var problem = localStepError(d, STEPS[i]);
+          if (problem) {
+            state.wizError = { step: STEPS[i], message: problem };
+            return go(stepHash(STEPS[i]));
+          }
+        }
+        Object.keys(state.unsaved).forEach(persistStep);
+        busy(button, state.queue.then(function () { return call('applicationSubmit', [d.id]); }), 'Отправляем…').then(function (result) {
           state.draft = null;
-          state.apps = null;
-          state.profile = null;
+          putApp(result.item);
           toast('Заявка отправлена');
           go('#/request/' + encodeURIComponent(result.item.id), true);
+          bootstrap().catch(function () {});
         }).catch(function (error) {
           if (error.step) {
             state.wizError = { step: error.step, message: error.message };
@@ -3437,21 +3687,7 @@
       });
       $('#dir-add').addEventListener('click', function (event) {
         event.preventDefault();
-        var item = state.vacancy;
-        var button = this;
-        if (!item || button.classList.contains('is-busy')) return;
-        button.classList.add('is-busy');
-        button.textContent = 'Создаём анкету…';
-        call('draftCreate', [item.gid]).then(function (result) {
-          state.draft = result.item;
-          state.apps = null;
-          go('#/apply/' + encodeURIComponent(result.item.id) + '/country');
-        }).catch(function (error) {
-          toast(error.message);
-        }).then(function () {
-          button.classList.remove('is-busy');
-          button.textContent = 'Добавить кандидата';
-        });
+        startDraft();
       });
       $('#dir-player').addEventListener('click', function () {
         if (state.helpVideoUrl) window.open(state.helpVideoUrl, '_blank', 'noopener');
@@ -3473,8 +3709,7 @@
       var items = state.apps || [];
       var done = items.filter(function (i) { return DONE_STATUSES.indexOf(i.status) >= 0; });
       var active = items.filter(function (i) { return DONE_STATUSES.indexOf(i.status) < 0; });
-      var total = items.length;
-      $('#apps-total').textContent = 'Всего ' + total + ' ' + plural(total, 'заявка', 'заявки', 'заявок');
+      $('#apps-total').textContent = 'Всего ' + items.length + ' ' + plural(items.length, 'заявка', 'заявки', 'заявок');
       $('#count-active').textContent = active.length;
       $('#count-done').textContent = done.length;
       $all('#app-tabs .seg-btn').forEach(function (button) {
@@ -3494,24 +3729,32 @@
         fill($('#app-list'), []);
         setState('apps-state', 'loading');
       }
-      call('myApplications').then(function (result) {
-        state.apps = result.items;
+      refresh('myApplications', [], function (result) { remember({ apps: result.items }); }).then(function () {
         if (state.current === 'requests') paintApps();
       }).catch(function (error) {
-        if (error.code === 'AUTH') return;
-        if (state.apps) toast(error.message);
-        else setState('apps-state', 'error', error.message, loadApps);
+        if (error.code !== 'AUTH' && !state.apps) setState('apps-state', 'error', error.message, loadApps);
       });
     }
 
     function loadRequest(id) {
-      fill($('#request-body'), []);
-      setState('request-state', 'loading');
-      call('myApplication', [id]).then(function (result) {
+      var cached = findApp(id);
+      if (cached) {
         setState('request-state');
-        paintRequest(result.item);
+        paintRequest(cached);
+      } else {
+        fill($('#request-body'), []);
+        setState('request-state', 'loading');
+      }
+      call('myApplication', [id]).then(function (result) {
+        var fresh = result.item;
+        var changed = !cached || !sameData(cached, fresh);
+        putApp(fresh);
+        if (state.current !== 'request' || state.params[0] !== id) return;
+        setState('request-state');
+        var typing = document.activeElement && document.activeElement.closest && document.activeElement.closest('#request-body form');
+        if (changed && !typing) paintRequest(fresh);
       }).catch(function (error) {
-        if (error.code !== 'AUTH') setState('request-state', 'error', error.message, function () { loadRequest(id); });
+        if (error.code !== 'AUTH' && !cached) setState('request-state', 'error', error.message, function () { loadRequest(id); });
       });
     }
 
@@ -3533,11 +3776,14 @@
           h('a', { class: 'btn btn-register', href: '#/apply/' + encodeURIComponent(item.id) + '/country', text: 'Продолжить заполнение' }),
           h('button', { class: 'wiz-prev', type: 'button', text: 'Удалить черновик', onclick: function () {
             if (!window.confirm('Удалить черновик? Загруженные фото тоже удалятся.')) return;
-            busy(this, call('draftDelete', [item.id])).then(function () {
-              state.apps = null;
-              toast('Черновик удалён');
-              go('#/requests', true);
-            }).catch(function (error) { toast(error.message); });
+            remember({ apps: (state.apps || []).filter(function (a) { return a.id !== item.id; }) });
+            if (state.draft && state.draft.id === item.id) state.draft = null;
+            toast('Черновик удалён');
+            go('#/requests', true);
+            enqueue(function () { return call('draftDelete', [item.id]); }).catch(function (error) {
+              if (error.code !== 'NOT_FOUND') toast(error.message);
+              bootstrap().catch(function () {});
+            });
           } })
         ]));
       }
@@ -3582,6 +3828,7 @@
       var ticketInput = h('input', { type: 'file', accept: 'image/*,application/pdf' });
       ticketInput.addEventListener('change', function () {
         uploadFiles(ticketInput, 'ticket', item.id, 1, ticketStatus, function (fresh) {
+          putApp(fresh);
           if (fresh.status !== item.status) {
             toast('Выезд указан');
             paintRequest(fresh);
@@ -3594,16 +3841,14 @@
       var err = h('p', { class: 'wiz-error', role: 'alert', hidden: true });
       var save = h('button', { class: 'btn btn-register', type: 'submit', text: 'Сохранить' });
       var hint = item.direction && item.direction.tickets === 'recruiter' ? 'Купите билет и вложите его фото.' : 'Вложите билет, который выдал заказчик.';
+      var dateField = h('input', { id: 'dep-date', type: 'date' });
+      dateField.value = item.departureOn || '';
       var form = h('form', { class: 'block ticket', novalidate: true }, [h('h2', { class: 'eyebrow', text: 'БИЛЕТЫ И ТОЧНАЯ ДАТА' })]
         .concat(input('dep-from', 'Откуда выезжает', item.fromCity, null, 'Город или страна'))
         .concat([h('p', { class: 'ask', text: 'Тип прибытия' }), modes])
         .concat(input('dep-station', 'Название вокзала / аэропорта', item.station, null, 'Например: Казанский вокзал'))
         .concat(input('dep-arrival', 'Дата и время прибытия', item.arrivalAt, 'datetime-local'))
-        .concat([h('label', { class: 'ask', for: 'dep-date', text: 'Дата выезда' }), (function () {
-          var field = h('input', { id: 'dep-date', type: 'date' });
-          field.value = item.departureOn || '';
-          return field;
-        })()])
+        .concat([h('label', { class: 'ask', for: 'dep-date', text: 'Дата выезда' }), dateField])
         .concat([
           h('p', { class: 'ask' }, ['Фото билета ', h('i', { text: '*' })]),
           h('label', { class: 'file' }, [ticketInput, h('b', { text: 'Выбрать файлы' }), ticketStatus]),
@@ -3614,13 +3859,16 @@
       form.addEventListener('submit', function (event) {
         event.preventDefault();
         showError(err, '');
-        busy(save, call('saveDeparture', [item.id, {
-          fromCity: $('#dep-from').value,
-          transport: transport,
-          station: $('#dep-station').value,
-          arrivalAt: $('#dep-arrival').value,
-          departureOn: $('#dep-date').value
-        }]), 'Сохраняем…').then(function (result) {
+        busy(save, enqueue(function () {
+          return call('saveDeparture', [item.id, {
+            fromCity: $('#dep-from').value,
+            transport: transport,
+            station: $('#dep-station').value,
+            arrivalAt: $('#dep-arrival').value,
+            departureOn: $('#dep-date').value
+          }]);
+        }), 'Сохраняем…').then(function (result) {
+          putApp(result.item);
           toast(result.item.status !== item.status ? 'Выезд указан' : 'Сохранено');
           paintRequest(result.item);
         }).catch(function (error) { showError(err, error); });
@@ -3633,6 +3881,7 @@
       var input = h('input', { type: 'file', accept: 'image/*,application/pdf', multiple: true });
       input.addEventListener('change', function () {
         uploadFiles(input, 'contract', item.id, 2, status, function (fresh) {
+          putApp(fresh);
           toast('Фото договора отправлено на проверку');
           paintRequest(fresh);
         });
@@ -3644,23 +3893,31 @@
       ]);
     }
 
+    var PROFILE_PAINTERS = { profile: paintProfile, withdraw: paintWithdraw, acts: paintActs, partner: paintPartner };
+
     function loadProfile(target) {
-      var painters = { profile: paintProfile, withdraw: paintWithdraw, acts: paintActs, partner: paintPartner };
-      var body = $('#' + target + '-body');
-      if (state.profile) painters[target](state.profile);
+      if (state.profile) PROFILE_PAINTERS[target](state.profile);
       else {
-        fill(body, []);
+        fill($('#' + target + '-body'), []);
         setState(target + '-state', 'loading');
       }
-      call('getProfile').then(function (result) {
-        state.profile = result;
+      refresh('getProfile', [], function (result) {
+        delete result.ok;
+        delete result.version;
+        remember({ profile: result });
+      }).then(function () {
         setState(target + '-state');
-        if (state.current === target) painters[target](result);
+        if (state.current === target && state.profile) PROFILE_PAINTERS[target](state.profile);
       }).catch(function (error) {
-        if (error.code === 'AUTH') return;
-        if (state.profile) toast(error.message);
-        else setState(target + '-state', 'error', error.message, function () { loadProfile(target); });
+        if (error.code !== 'AUTH' && !state.profile) setState(target + '-state', 'error', error.message, function () { loadProfile(target); });
       });
+    }
+
+    function setProfile(result) {
+      delete result.ok;
+      delete result.version;
+      remember({ profile: result });
+      return result;
     }
 
     function channel(label, href, sub) {
@@ -3723,7 +3980,7 @@
       button.addEventListener('click', function () {
         if (!window.confirm('Сформировать акт на ' + money(p.sums.available) + '?')) return;
         busy(button, call('actCreate', [], { timeout: 90000 }), 'Формируем…').then(function (result) {
-          state.profile = result;
+          setProfile(result);
           toast('Акт сформирован. Подпишите его.');
           go('#/acts');
         }).catch(function (error) { toast(error.message); });
@@ -3761,9 +4018,8 @@
           sign.addEventListener('click', function () {
             if (!window.confirm('Подписать акт ' + act.number + ' на ' + money(act.amount) + '? Подпись подтверждает, что сумма и реквизиты верны.')) return;
             busy(sign, call('actSign', [act.id]), 'Подписываем…').then(function (result) {
-              state.profile = result;
               toast('Акт подписан');
-              paintActs(result);
+              paintActs(setProfile(result));
             }).catch(function (error) { toast(error.message); });
           });
           extra.push(sign);
@@ -3801,19 +4057,18 @@
     }
 
     function loadHelp() {
-      if (state.questions) return paintHelp();
-      setState('help-state', 'loading');
-      call('questions').then(function (result) {
-        state.questions = result.items;
-        setState('help-state');
-        paintHelp();
+      if (state.questions) paintHelp();
+      else setState('help-state', 'loading');
+      refresh('questions', [], function (result) { remember({ questions: result.items }); }).then(function () {
+        if (state.current === 'help') paintHelp();
       }).catch(function (error) {
-        if (error.code !== 'AUTH') setState('help-state', 'error', error.message, loadHelp);
+        if (error.code !== 'AUTH' && !state.questions) setState('help-state', 'error', error.message, loadHelp);
       });
     }
 
     function paintHelp() {
       var items = state.questions || [];
+      setState('help-state');
       var nodes = items.map(function (q) {
         return h('section', { class: 'bank' }, [h('div', { class: 'bank-name', text: q.title }), h('p', { class: 'bank-note', text: q.body })]);
       });
@@ -3845,6 +4100,17 @@
         paintApps();
       });
       bindWizard();
+      PAINTERS.vacancies = function () { if (state.directions) paintDirections(); };
+      PAINTERS.vacancy = function () { if (findDirection(state.params[0])) paintVacancy(findDirection(state.params[0])); };
+      PAINTERS.requests = function () { if (state.apps) paintApps(); };
+      PAINTERS.help = function () { if (state.questions) paintHelp(); };
+      Object.keys(PROFILE_PAINTERS).forEach(function (name) {
+        PAINTERS[name] = function () {
+          if (!state.profile) return;
+          setState(name + '-state');
+          PROFILE_PAINTERS[name](state.profile);
+        };
+      });
     }
   </script>
 
@@ -3871,24 +4137,44 @@
     function loadAdminList() {
       if (state.adminRows) paintAdminList();
       else setState('admin-state', 'loading');
-      call('adminList').then(function (result) {
-        state.adminRows = result.items;
+      refresh('adminList', [], function (result) { remember({ adminRows: result.items }); }).then(function () {
         if (state.current === 'admin') paintAdminList();
       }).catch(function (error) {
-        if (error.code === 'AUTH') return;
-        if (state.adminRows) toast(error.message);
-        else setState('admin-state', 'error', error.message, loadAdminList);
+        if (error.code !== 'AUTH' && !state.adminRows) setState('admin-state', 'error', error.message, loadAdminList);
       });
     }
 
+    function putAdminRow(item) {
+      var found = false;
+      var rows = (state.adminRows || []).map(function (r) {
+        if (r.id !== item.id) return r;
+        found = true;
+        return item;
+      });
+      if (!found) rows.unshift(item);
+      remember({ adminRows: rows });
+    }
+
     function loadAdminRequest(id) {
-      fill($('#admin-card'), []);
-      setState('admin-card-state', 'loading');
-      call('adminGet', [id]).then(function (result) {
+      var cached = (state.adminRows || []).filter(function (r) { return r.id === id; })[0];
+      if (cached) {
         setState('admin-card-state');
-        paintAdminRequest(result.item);
+        paintAdminRequest(cached);
+      } else {
+        fill($('#admin-card'), []);
+        setState('admin-card-state', 'loading');
+      }
+      call('adminGet', [id]).then(function (result) {
+        var changed = !cached || !sameData(cached, result.item);
+        putAdminRow(result.item);
+        if (state.current !== 'admin-request' || state.params[0] !== id) return;
+        setState('admin-card-state');
+        var busyHere = document.querySelector('#admin-card .is-busy') ||
+          (document.activeElement && document.activeElement.closest && document.activeElement.closest('#admin-card')) ||
+          document.querySelector('#admin-card .admin-reason:not([hidden])');
+        if (changed && !busyHere) paintAdminRequest(result.item);
       }).catch(function (error) {
-        if (error.code !== 'AUTH') setState('admin-card-state', 'error', error.message, function () { loadAdminRequest(id); });
+        if (error.code !== 'AUTH' && !cached) setState('admin-card-state', 'error', error.message, function () { loadAdminRequest(id); });
       });
     }
 
@@ -3992,7 +4278,7 @@
       var act = function (action, code, text, button) {
         showError(err, '');
         busy(button, call('adminAct', [item.id, action, code || '', text || '']), 'Подождите…').then(function (result) {
-          state.adminRows = null;
+          putAdminRow(result.item);
           toast('Готово');
           paintAdminRequest(result.item);
         }).catch(function (error) { showError(err, error); });
@@ -4043,12 +4329,12 @@
     }
 
     function loadAdminActs() {
-      setState('admin-acts-state', 'loading');
-      call('adminActs').then(function (result) {
-        setState('admin-acts-state');
-        paintAdminActs(result.items);
+      if (state.adminActs) paintAdminActs(state.adminActs);
+      else setState('admin-acts-state', 'loading');
+      refresh('adminActs', [], function (result) { remember({ adminActs: result.items }); }).then(function () {
+        if (state.current === 'admin-acts' && state.adminActs) paintAdminActs(state.adminActs);
       }).catch(function (error) {
-        if (error.code !== 'AUTH') setState('admin-acts-state', 'error', error.message, loadAdminActs);
+        if (error.code !== 'AUTH' && !state.adminActs) setState('admin-acts-state', 'error', error.message, loadAdminActs);
       });
     }
 
@@ -4067,6 +4353,7 @@
             if (!window.confirm('Отметить акт ' + act.number + ' на ' + money(act.amount) + ' оплаченным? Отметку нельзя снять.')) return;
             busy(pay, call('adminMarkPaid', [act.id]), 'Отмечаем…').then(function (result) {
               toast('Акт отмечен оплаченным');
+              remember({ adminActs: result.items });
               paintAdminActs(result.items);
             }).catch(function (error) { toast(error.message); });
           });
@@ -4084,25 +4371,33 @@
     }
 
     function loadAdminDirections() {
-      setState('admin-dirs-state', 'loading');
+      if (state.directions) paintAdminDirections();
+      else setState('admin-dirs-state', 'loading');
       call('directions').then(function (result) {
-        setState('admin-dirs-state');
-        var items = result.items || [];
-        fill($('#admin-dirs'), items.map(function (item) {
-          return section(item.title, [
-            row('Лист', item.sheetName),
-            row('Рекрутам', item.published ? 'Показывается' : 'Скрыто'),
-            row('Агентское', money(item.agentFee))
-          ], [h('a', { class: 'sheet-link', href: item.url, target: '_blank', rel: 'noopener', text: 'Открыть Google Sheets' })]);
-        }));
-        if (!items.length) setState('admin-dirs-state', 'empty', 'Пока нет направлений');
+        rememberDirections(result);
+        if (state.current === 'admin-dirs') paintAdminDirections();
       }).catch(function (error) {
-        if (error.code !== 'AUTH') setState('admin-dirs-state', 'error', error.message, loadAdminDirections);
+        if (error.code !== 'AUTH' && !state.directions) setState('admin-dirs-state', 'error', error.message, loadAdminDirections);
       });
+    }
+
+    function paintAdminDirections() {
+      setState('admin-dirs-state');
+      var items = state.directions || [];
+      fill($('#admin-dirs'), items.map(function (item) {
+        return section(item.title, [
+          row('Лист', item.sheetName),
+          row('Рекрутам', item.published ? 'Показывается' : 'Скрыто'),
+          row('Агентское', money(item.agentFee))
+        ], [h('a', { class: 'sheet-link', href: item.url, target: '_blank', rel: 'noopener', text: 'Открыть Google Sheets' })]);
+      }));
+      if (!items.length) setState('admin-dirs-state', 'empty', 'Пока нет направлений');
     }
 
     function bindAdmin() {
       $('#admin-filter').addEventListener('change', paintAdminList);
+      PAINTERS.admin = function () { if (state.adminRows) paintAdminList(); };
+      PAINTERS['admin-acts'] = function () { if (state.adminActs) paintAdminActs(state.adminActs); };
       $('#new-tickets').addEventListener('change', function () {
         $('#new-tickets-label').value = this.value === 'recruiter' ? 'Рекрут покупает билеты' : 'Заказчик предоставляет билеты';
       });
@@ -4162,6 +4457,10 @@
       window.addEventListener('offline', function () { toast('Нет интернета. Данные не отправятся, пока связь не вернётся.'); });
       window.addEventListener('online', function () { toast('Связь восстановлена'); });
       window.addEventListener('hashchange', route);
+      if (session()) {
+        restoreCache();
+        bootstrap().catch(function () {});
+      }
       route();
 
       api('publicConfig').then(function (result) {
