@@ -1,16 +1,3437 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ЯРекрут</title>
-  <meta http-equiv="refresh" content="0;url=https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec">
-  <link rel="canonical" href="https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+      color: #111111;
+    }
+    body {
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+    button, a {
+      font-family: inherit;
+    }
+    .screen {
+      width: 100%;
+      max-width: 390px;
+      height: 100%;
+      height: 100dvh;
+      margin: 0 auto;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: max(20px, env(safe-area-inset-top)) 16px max(12px, env(safe-area-inset-bottom));
+    }
+    .spacer-top {
+      flex: 1.6 1 0;
+      min-height: 12px;
+    }
+    .spacer-mid {
+      flex: 1 1 0;
+      min-height: 12px;
+    }
+    .actions {
+      flex: none;
+      display: flex;
+      flex-direction: column;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 52px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 16px;
+      text-decoration: none;
+      color: #ffffff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 22px;
+      letter-spacing: -0.41px;
+    }
+    .btn-register { background: #2C5C38; }
+    .btn-login { background: #243028; }
+    .hint {
+      margin: 10px 0 0;
+      text-align: center;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 16px;
+      letter-spacing: 0;
+    }
+    .install {
+      flex: none;
+      padding: 16px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .install h1 {
+      margin: 0;
+      color: #111111;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 28px;
+      letter-spacing: -0.3px;
+    }
+    .install p {
+      margin: 8px 0 0;
+      max-width: 326px;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0;
+    }
+    .plats {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .plat {
+      flex: 1 1 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      padding: 12px;
+      border: 0;
+      border-radius: 12px;
+      background: #111111;
+      color: #ffffff;
+      text-align: left;
+      cursor: pointer;
+    }
+    .plat-name {
+      display: block;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 17px;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+    .plat-sub {
+      display: block;
+      margin-top: 0;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 14px;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+    .ico {
+      flex: none;
+      display: block;
+    }
+    .sheet-root {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      visibility: hidden;
+      pointer-events: none;
+      transition: visibility 0s linear 0.28s;
+    }
+    .sheet-root.is-open {
+      visibility: visible;
+      pointer-events: auto;
+      transition: visibility 0s;
+    }
+    .sheet-dim {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      padding: 0;
+      background: rgba(17, 17, 17, 0.45);
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity 0.28s ease;
+    }
+    .sheet-root.is-open .sheet-dim { opacity: 1; }
+    .sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-width: 390px;
+      max-height: min(88dvh, 720px);
+      margin: 0 auto;
+      overflow: auto;
+      background: #ffffff;
+      border-radius: 24px 24px 0 0;
+      padding: 10px 16px max(16px, env(safe-area-inset-bottom));
+      transform: translateY(110%);
+      transition: transform 0.28s ease;
+    }
+    .sheet-root.is-open .sheet { transform: translateY(0); }
+    .sheet-grab {
+      width: 36px;
+      height: 4px;
+      margin: 0 auto 8px;
+      border-radius: 100px;
+      background: #E5E5EA;
+    }
+    .sheet-x {
+      position: absolute;
+      top: 16px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 16px;
+      background: #F4F4F6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .sheet h2 {
+      margin: 8px 40px 0 0;
+      color: #111111;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 34px;
+      letter-spacing: -0.5px;
+    }
+    .sheet-lead {
+      margin: 6px 0 0;
+      color: #636366;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .how { margin: 16px 0 0; }
+    .how-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .how-step:first-child { margin-top: 0; }
+    .how-n {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 14px;
+      background: #2C5C38;
+      color: #ffffff;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 28px;
+      text-align: center;
+    }
+    .how-text {
+      color: #636366;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 18px;
+    }
+    .how-text b {
+      display: block;
+      margin-bottom: 2px;
+      color: #111111;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .how-done {
+      margin: 16px 0 0;
+      color: #111111;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .how-done b { font-weight: 700; }
+    .how-else {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #E5E5EA;
+    }
+    .how-else b {
+      display: block;
+      color: #111111;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .how-else p {
+      margin: 6px 0 0;
+      color: #636366;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .sheet-ok { width: 100%; margin-top: 18px; margin-bottom: 4px; cursor: pointer; }
+
+    .screen-reg, .screen-login, .screen-list, .screen-apps, .screen-profile, .screen-apply, .screen-admin, .screen-admin-acts, .screen-admin-request, .screen-admin-dirs { display: none; }
+    html.is-register, html.is-register body,
+    html.is-login, html.is-login body {
+      height: auto;
+      overflow: auto;
+    }
+    html.is-list, html.is-list body,
+    html.is-apps, html.is-apps body,
+    html.is-profile, html.is-profile body {
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    html.is-register .screen-start,
+    html.is-login .screen-start,
+    html.is-list .screen-start,
+    html.is-list .screen-reg,
+    html.is-list .screen-login { display: none; }
+    html.is-register .screen-reg,
+    html.is-login .screen-login {
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      min-height: 100dvh;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      color: #111111;
+      text-decoration: none;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: 0;
+    }
+    .back-ico {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+    .reg-wrap {
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+      padding: 20px 0 8px;
+    }
+    .card {
+      width: 100%;
+      padding: 20px 16px 28px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .reg-title {
+      margin: 22px 0 0;
+      color: #111111;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 34px;
+      letter-spacing: -0.4px;
+    }
+    .reg-sub {
+      margin: 2px 0 0;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+      letter-spacing: 0;
+    }
+    .fields { margin-top: 30px; }
+    .field { margin-top: 14px; }
+    .field:first-child { margin-top: 0; }
+    .field label {
+      display: block;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.6px;
+    }
+    .field input {
+      display: block;
+      width: 100%;
+      height: 48px;
+      margin-top: 6px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: 0;
+    }
+    .field input::placeholder {
+      color: #AEAEB2;
+      opacity: 1;
+    }
+    .field + .check { margin-top: 14px; }
+    .check + .check { margin-top: 0; }
+    .check {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 4px;
+    }
+    .check input {
+      position: absolute;
+      opacity: 0;
+      width: 22px;
+      height: 22px;
+    }
+    .box {
+      flex: none;
+      width: 22px;
+      height: 22px;
+      margin-top: 1px;
+      border: 1.5px solid #2C5C38;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+    .check input:checked + .box { background: #2C5C38; }
+    .check input:focus-visible + .box { outline: 2px solid #2C5C38; outline-offset: 2px; }
+    .check-text {
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+      letter-spacing: 0;
+    }
+    .check-text a {
+      color: #2C5C38;
+      text-decoration: none;
+    }
+    .btn-submit {
+      width: 100%;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+    .btn-enter {
+      width: 100%;
+      height: 48px;
+      margin-top: 20px;
+      border-radius: 16px;
+      letter-spacing: 0;
+      font-size: 16px;
+      line-height: 20px;
+      cursor: pointer;
+    }
+    .code-fields .btn-submit { margin-top: 20px; }
+    .form-error {
+      margin: 12px 0 0;
+      color: #8A3A2A;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .screen-reg-code, .screen-login-code { display: none; }
+    html.is-register-code, html.is-register-code body,
+    html.is-login-code, html.is-login-code body {
+      height: auto;
+      overflow: auto;
+    }
+    html.is-register-code .screen-start,
+    html.is-register-code .screen-reg,
+    html.is-register-code .screen-login,
+    html.is-register-code .screen-list,
+    html.is-login-code .screen-start,
+    html.is-login-code .screen-reg,
+    html.is-login-code .screen-login,
+    html.is-login-code .screen-list { display: none; }
+    html.is-register-code .screen-reg-code,
+    html.is-login-code .screen-login-code {
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      min-height: 100dvh;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+    }
+    html.is-push, html.is-push body { overflow: hidden; }
+    html.is-push.is-register-code .screen-reg,
+    html.is-push.is-login-code .screen-login {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1;
+      width: min(100%, 390px);
+      height: 100dvh;
+      margin: 0 auto;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      background: #ffffff;
+      pointer-events: none;
+      transform: translateX(0);
+      transition: none;
+    }
+    html.is-push.is-push-go.is-register-code .screen-reg,
+    html.is-push.is-push-go.is-login-code .screen-login {
+      transform: translateX(-24%);
+      transition: transform 540ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    html.is-push.is-register-code .screen-reg-code,
+    html.is-push.is-login-code .screen-login-code {
+      position: relative;
+      z-index: 2;
+      transform: translateX(100%);
+      box-shadow: -16px 0 32px rgba(17, 17, 17, 0.12);
+      transition: none;
+    }
+    html.is-push.is-push-go.is-register-code .screen-reg-code,
+    html.is-push.is-push-go.is-login-code .screen-login-code {
+      transform: translateX(0);
+      transition: transform 540ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    html.is-apps .screen-start,
+    html.is-apps .screen-reg,
+    html.is-apps .screen-login,
+    html.is-apps .screen-reg-code,
+    html.is-apps .screen-login-code,
+    html.is-apps .screen-list,
+    html.is-apps .screen-detail { display: none; }
+    html.is-profile .screen-start,
+    html.is-profile .screen-reg,
+    html.is-profile .screen-login,
+    html.is-profile .screen-reg-code,
+    html.is-profile .screen-login-code,
+    html.is-profile .screen-list,
+    html.is-profile .screen-apps,
+    html.is-profile .screen-request,
+    html.is-profile .screen-detail { display: none; }
+    html.is-list .screen-list,
+    html.is-apps .screen-apps,
+    html.is-profile .screen-profile {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-width: 390px;
+      height: auto;
+      margin: 0 auto;
+      padding: 0;
+      overflow: hidden;
+      background: #F4F4F6;
+    }
+    .list-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px 16px;
+    }
+    .list-title {
+      margin: 2px 0 0;
+      color: #111111;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 34px;
+      letter-spacing: -0.5px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .chip {
+      height: 38px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+    }
+    .chip.is-on {
+      background: #2C5C38;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .v-card {
+      display: block;
+      margin-top: 14px;
+      padding: 16px 14px;
+      background: #ffffff;
+      border-radius: 16px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .v-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .v-head h2 {
+      margin: 0;
+      color: #111111;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 24px;
+      letter-spacing: -0.4px;
+    }
+    .v-go {
+      flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      background: #F4F4F6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .v-meta {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 4px;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .v-meta i {
+      width: 1px;
+      height: 14px;
+      background: #C7C7CC;
+      font-style: normal;
+    }
+    .fee {
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #F1F6F1;
+    }
+    .fee span {
+      display: block;
+      color: #2C5C38;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .fee strong {
+      display: block;
+      margin-top: 10px;
+      color: #2C5C38;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      line-height: 32px;
+      letter-spacing: 0;
+    }
+    .pay {
+      margin-top: 10px;
+    }
+    .pay span {
+      display: block;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .pay strong {
+      display: block;
+      color: #111111;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 26px;
+      line-height: 32px;
+      letter-spacing: -0.6px;
+    }
+    .year, .admit {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #E5E5EA;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .year b {
+      color: #111111;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 18px;
+    }
+    .admit { justify-content: flex-start; gap: 6px; }
+    .tag {
+      padding: 8px;
+      border-radius: 13px;
+      background: #F1F6F1;
+      color: #243628;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .tabbar {
+      flex: none;
+      display: flex;
+      height: calc(64px + env(safe-area-inset-bottom));
+      padding: 6px 6px max(8px, env(safe-area-inset-bottom));
+      background: #ffffff;
+      z-index: 2;
+    }
+    .seg {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .seg-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 40px;
+      border: 0;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      cursor: pointer;
+    }
+    .seg-btn.is-on {
+      background: #2C5C38;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 11px;
+      background: #F4F4F6;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .seg-btn.is-on .count {
+      background: #ffffff;
+      color: #2C5C38;
+    }
+    .apps-total {
+      margin: 2px 0 0;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .apps { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .app {
+      padding: 14px 12px 12px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .app-top, .app-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .app-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 22px;
+      letter-spacing: -0.3px;
+    }
+    .app-status {
+      flex: none;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 18px;
+      color: #636366;
+    }
+    .app-status.is-ok { color: #2C5C38; }
+    .app-bottom { margin-top: 8px; }
+    .app-place, .app-when {
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+    }
+    .app-place { font-size: 15px; line-height: 20px; }
+    .app-when { flex: none; font-size: 14px; line-height: 18px; }
+    .apps-add { margin-top: 14px; }
+    .tab {
+      flex: 1;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border: 0;
+      background: transparent;
+      color: #8E8E93;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 11px;
+      line-height: 13px;
+      letter-spacing: -0.1px;
+    }
+    .tab.is-on {
+      color: #2C5C38;
+      font-weight: 700;
+    }
+    .screen-detail { display: none; }
+    html.is-detail, html.is-detail body {
+      height: auto;
+      overflow: auto;
+    }
+    html.is-detail .screen-start,
+    html.is-detail .screen-reg,
+    html.is-detail .screen-login,
+    html.is-detail .screen-reg-code,
+    html.is-detail .screen-login-code,
+    html.is-detail .screen-list { display: none; }
+    html.is-detail .screen-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: auto;
+      min-height: 100dvh;
+      max-width: 390px;
+      margin: 0 auto;
+      padding: max(12px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      background: #F4F4F6;
+    }
+    .detail-back { margin-top: 4px; }
+    .sheet-card, .video-card {
+      padding: 16px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .sheet-card h2, .video-card h2 {
+      margin: 0;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 22px;
+    }
+    .video-card h2 { font-size: 15px; line-height: 20px; }
+    .sheet-card p, .video-card p {
+      margin: 8px 0 0;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .sheet-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      margin-top: 14px;
+      border-radius: 16px;
+      background: #2C5C38;
+      color: #ffffff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 20px;
+      text-decoration: none;
+    }
+    .player {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 148px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      width: 100%;
+      cursor: pointer;
+    }
+    .fact {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #E5E5EA;
+    }
+    .fact strong {
+      display: block;
+      color: #2C5C38;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .fact span {
+      display: block;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .detail-add { margin-top: 4px; text-align: center; }
+    .screen-detail .v-card { margin-top: 0; }
+    .screen-request { display: none; }
+    html.is-request, html.is-request body { height: auto; overflow: auto; }
+    html.is-request .screen-start,
+    html.is-request .screen-reg,
+    html.is-request .screen-login,
+    html.is-request .screen-reg-code,
+    html.is-request .screen-login-code,
+    html.is-request .screen-list,
+    html.is-request .screen-detail,
+    html.is-request .screen-apps { display: none; }
+    html.is-request .screen-request {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: auto;
+      min-height: 100dvh;
+      max-width: 390px;
+      margin: 0 auto;
+      padding: max(12px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      background: #F4F4F6;
+    }
+    .person {
+      padding: 14px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .person-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .pill {
+      flex: none;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: #2C5C38;
+      color: #ffffff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .pill.is-wait { background: #F4F4F6; color: #636366; }
+    .person-place { margin: 6px 0 0; color: #636366; font-family: "Manrope", sans-serif; font-weight: 500; font-size: 14px; line-height: 18px; }
+    .block { padding: 14px; background: #ffffff; border-radius: 16px; }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #2C5C38;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.5px;
+    }
+    .row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
+    .row span { color: #636366; font-family: "Manrope", sans-serif; font-weight: 500; font-size: 15px; line-height: 20px; }
+    .row b { max-width: 62%; color: #111111; font-family: "Manrope", sans-serif; font-weight: 500; font-size: 15px; line-height: 20px; text-align: right; }
+    .row b.mil { max-width: none; color: #243628; font-weight: 700; }
+    .mil {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #243628;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 18px;
+    }
+    .mil i {
+      width: 16px; height: 16px; border-radius: 8px; background: #E4DCC8;
+      color: #243628; font-style: normal; font-size: 11px; line-height: 16px; text-align: center;
+    }
+    .ask {
+      display: block;
+      margin: 12px 0 6px;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .ask i { color: #2C5C38; font-style: normal; }
+    .ask:first-of-type { margin-top: 0; }
+    .ticket input, .ticket .file {
+      width: 100%;
+      height: 44px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      padding: 0 14px;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .ticket input::placeholder { color: #AEAEB2; opacity: 1; }
+    .modes { display: flex; gap: 8px; }
+    .mode {
+      flex: 1;
+      height: 72px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 16px;
+      cursor: pointer;
+    }
+    .mode.is-on { background: #2C5C38; color: #ffffff; }
+    .file {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      height: 41px;
+    }
+    .file input { display: none; }
+    .file b { color: #2C5C38; font-weight: 600; font-size: 14px; line-height: 18px; }
+    .file span { color: #636366; font-weight: 500; font-size: 14px; line-height: 18px; }
+    .app { cursor: pointer; }
+    .balance {
+      margin-top: 16px;
+      padding: 16px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .balance span {
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .balance strong {
+      display: block;
+      margin-top: 4px;
+      color: #2C5C38;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      line-height: 38px;
+      letter-spacing: -0.6px;
+    }
+    .profile-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .money-btn, .acts-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 4px;
+      min-height: 95px;
+      padding: 14px 12px;
+      border: 0;
+      border-radius: 16px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .money-btn { background: #2C5C38; }
+    .acts-btn { background: #ffffff; }
+    .money-btn b, .acts-btn b {
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+    }
+    .money-btn b { color: #ffffff; }
+    .acts-btn b { color: #111111; }
+    .money-btn span {
+      color: #F2F2F7;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .acts-btn span {
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .bank, .hunter, .channel {
+      margin-top: 12px;
+      padding: 14px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .bank-name, .bank-row b, .hunter b, .channel b {
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .hunter b, .channel b { font-weight: 700; font-size: 16px; }
+    .bank-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .bank-note {
+      margin: 8px 0 0;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 18px;
+    }
+    .hunter, .channel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .hunter img, .tg {
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      flex: none;
+    }
+    .tg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #007AFF;
+    }
+    .hunter span, .channel span {
+      display: block;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .channels-label {
+      margin: 18px 4px 0;
+      color: #2C5C38;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.6px;
+    }
+    .phone {
+      margin: 2px 0 0;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    html.is-apply, html.is-apply body {
+      height: auto;
+      overflow: auto;
+      background: #F4F4F6;
+    }
+    html.is-apply .screen-start,
+    html.is-apply .screen-reg,
+    html.is-apply .screen-login,
+    html.is-apply .screen-reg-code,
+    html.is-apply .screen-login-code,
+    html.is-apply .screen-list,
+    html.is-apply .screen-apps,
+    html.is-apply .screen-profile,
+    html.is-apply .screen-detail,
+    html.is-apply .screen-request { display: none; }
+    html.is-apply .screen-apply {
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      min-height: 100dvh;
+      max-width: 390px;
+      margin: 0 auto;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+      background: #F4F4F6;
+    }
+    .wiz-leave {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      color: #111111;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 24px;
+      letter-spacing: -0.3px;
+    }
+    .wiz-count {
+      margin: 0;
+      padding-top: 4px;
+      text-align: center;
+      color: #636366;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0 8px;
+    }
+    .step {
+      width: 54px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      color: #8E8E93;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 16px;
+    }
+    .tick { display: none; }
+    .step.is-now .dot,
+    .step.is-done .dot { background: #2C5C38; color: #ffffff; }
+    .step.is-done .num { display: none; }
+    .step.is-done .tick { display: block; }
+    .step .label {
+      color: #8E8E93;
+      font-weight: 500;
+      font-size: 11px;
+      line-height: 13px;
+      white-space: nowrap;
+    }
+    .step.is-now .label { color: #2C5C38; font-weight: 700; }
+    .step.is-done .label { color: #111111; font-weight: 700; }
+    .wiz-pane { margin-top: 20px; }
+    .wiz-title {
+      margin: 0;
+      color: #111111;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 28px;
+      letter-spacing: -0.4px;
+    }
+    .wiz-title.wiz-center { margin-top: 12px; text-align: center; letter-spacing: -0.3px; }
+    .wiz-lead {
+      margin: 6px 0 0;
+      color: #636366;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .wiz-lead.wiz-center { margin-top: 10px; text-align: center; }
+    .cit {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 10px;
+      padding: 14px;
+      border: 1.5px solid transparent;
+      border-radius: 16px;
+      background: #ffffff;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .cit:first-of-type { margin-top: 14px; }
+    .cit.is-on { border-color: #2C5C38; }
+    .cit-badge {
+      flex: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F4F4F6;
+      color: #111111;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .cit.is-on .cit-badge { border-radius: 12px; background: #2C5C38; color: #ffffff; }
+    .cit-globe { color: #2C5C38; }
+    .cit.is-on .cit-globe { color: #ffffff; }
+    .cit-text { min-width: 0; }
+    .cit-text strong {
+      display: block;
+      color: #111111;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+    }
+    .cit-text span {
+      display: block;
+      margin-top: 0;
+      color: #636366;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 18px;
+    }
+    .cit-check { flex: none; margin-left: auto; display: none; }
+    .cit.is-on .cit-check { display: block; }
+    .wiz-next {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 52px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 16px;
+      background: #2C5C38;
+      color: #ffffff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 22px;
+      cursor: pointer;
+    }
+    .wiz-next:disabled {
+      background: #E5E5EA;
+      color: #8E8E93;
+      cursor: default;
+    }
+    .wiz-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .wiz-prev, .wiz-go {
+      flex: 1;
+      width: auto;
+      height: 52px;
+      margin-top: 0;
+      border: 0;
+      border-radius: 16px;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 20px;
+      cursor: pointer;
+    }
+    .wiz-prev { background: #ffffff; color: #111111; }
+    .wiz-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: #ffffff;
+      border-radius: 16px;
+    }
+    .wiz-banner strong {
+      display: block;
+      color: #111111;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 18px;
+    }
+    .ban-sub {
+      display: block;
+      color: #636366;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    .flag {
+      flex: none;
+      width: 28px;
+      height: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #E4E4E8;
+      border-radius: 3px;
+    }
+    .flag i { display: block; flex: 1; }
+    .flag i:nth-child(1) { background: #ffffff; }
+    .flag i:nth-child(2) { background: #1C4FA3; }
+    .flag i:nth-child(3) { background: #E23B32; }
+    .wiz-hint, .wiz-note {
+      margin: 10px 0 0;
+      color: #636366;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+    }
+    .wiz-note { line-height: 20px; }
+    .wiz-doc-title {
+      margin: 16px 0 0;
+      color: #111111;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .drop {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 150px;
+      margin-top: 8px;
+      padding: 20px 16px;
+      border: 1px solid #C7C7CC;
+      border-radius: 16px;
+      background: #ffffff;
+      text-align: center;
+      cursor: pointer;
+    }
+    .drop strong { color: #111111; font-weight: 700; font-size: 15px; line-height: 18px; }
+    .drop span { color: #636366; font-weight: 500; font-size: 13px; line-height: 16px; }
+    .drop input, .doc input { display: none; }
+    .wiz-label {
+      display: block;
+      margin: 12px 0 6px;
+      color: #636366;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.6px;
+    }
+    .wiz-banner + .wiz-label { margin-top: 20px; }
+    .wiz-input, .wiz-area {
+      display: block;
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 12px 14px;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .wiz-input { height: 44px; }
+    .wiz-area { height: 88px; resize: none; }
+    .wiz-input::placeholder, .wiz-area::placeholder { color: #AEAEB2; opacity: 1; }
+    .mil { display: flex; gap: 8px; }
+    .mil button {
+      flex: 1;
+      height: 44px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+      cursor: pointer;
+    }
+    .mil button.is-on { background: #2C5C38; color: #ffffff; }
+    .docs { margin-top: 20px; }
+    .doc {
+      display: block;
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid #C7C7CC;
+      border-radius: 16px;
+      background: #ffffff;
+      cursor: pointer;
+    }
+    .doc:first-child { margin-top: 0; }
+    .doc strong { display: block; color: #111111; font-weight: 700; font-size: 15px; line-height: 20px; }
+    .doc-line { display: flex; gap: 10px; margin-top: 8px; }
+    .doc-line b { color: #2C5C38; font-weight: 600; font-size: 14px; line-height: 19px; }
+    .doc-line span {
+      min-width: 0;
+      overflow: hidden;
+      color: #636366;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 19px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .sums { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+    .sum { padding: 16px; background: #ffffff; border-radius: 16px; }
+    .sum h2 {
+      margin: 0 0 10px;
+      color: #2C5C38;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.6px;
+    }
+    .sum-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+    }
+    .sum-row span { color: #636366; }
+    .sum-row .val { color: #111111; text-align: right; }
+    .wiz-error {
+      margin: 10px 0 0;
+      color: #B42318;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 16px;
+    }
+    html.is-admin .screen,
+    html.is-admin-acts .screen,
+    html.is-admin-dirs .screen,
+    html.is-admin-request .screen { display: none; }
+    html.is-admin, html.is-admin body,
+    html.is-admin-acts, html.is-admin-acts body,
+    html.is-admin-dirs, html.is-admin-dirs body {
+      height: 100%;
+      overflow: hidden;
+      background: #F4F4F6;
+    }
+    html.is-admin .screen.screen-admin,
+    html.is-admin-acts .screen.screen-admin-acts,
+    html.is-admin-dirs .screen.screen-admin-dirs {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-width: 390px;
+      height: auto;
+      margin: 0 auto;
+      padding: 0;
+      overflow: hidden;
+      background: #F4F4F6;
+    }
+    html.is-admin-request, html.is-admin-request body {
+      height: auto;
+      overflow: auto;
+      background: #F4F4F6;
+    }
+    html.is-admin-request .screen.screen-admin-request {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: auto;
+      min-height: 100dvh;
+      max-width: 390px;
+      margin: 0 auto;
+      padding: max(12px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      background: #F4F4F6;
+    }
+    .admin-filter {
+      display: block;
+      width: 100%;
+      height: 44px;
+      margin-top: 12px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .admin-empty {
+      margin: 18px 0 0;
+      color: #636366;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .admin-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .admin-actions button, .admin-pay {
+      height: 48px;
+      border: 0;
+      border-radius: 16px;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 20px;
+      cursor: pointer;
+    }
+    .admin-go, .admin-pay { background: #2C5C38; color: #ffffff; }
+    .admin-pay { width: 100%; margin-top: 14px; }
+    .admin-stop { background: #ffffff; color: #111111; }
+    .admin-reason, .admin-reqs { margin-top: 12px; }
+    .admin-reason select, .admin-reqs select, .admin-reason textarea, .admin-reqs textarea {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    .admin-reason select, .admin-reqs select { height: 44px; padding: 0 12px; }
+    .admin-reason textarea, .admin-reqs textarea { min-height: 88px; padding: 12px; resize: vertical; }
+    .screen-admin .list-scroll, .screen-admin-acts .list-scroll, .screen-admin-dirs .list-scroll { padding-bottom: 12px; }
+    .dir-form { margin-top: 18px; }
+    .dir-form .field { color: #636366; font-weight: 600; font-size: 12px; letter-spacing: 0.4px; }
+    .dir-form input, .dir-form select {
+      display: block;
+      width: 100%;
+      height: 44px;
+      margin-top: 6px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+    .dir-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      color: #111111;
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+    .dir-form .dir-check input { width: 18px; height: 18px; margin: 0; padding: 0; }
+    .dir-form .admin-go { width: 100%; margin-top: 16px; }
+  </style>
+
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ЯРекрут">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec";</script>
 </head>
 <body>
-  <p><a href="https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec">Открыть кабинет ЯРекрут</a></p>
-  <script>
-    location.replace("https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec");
+    <main class="screen screen-start">
+    <div class="spacer-top" aria-hidden="true"></div>
+
+    <section class="actions">
+      <a class="btn btn-register" href="#/register">Зарегистрироваться</a>
+      <a class="btn btn-login" href="#/login">Войти</a>
+      <p class="hint">Регистрация займёт меньше минуты</p>
+    </section>
+
+    <div class="spacer-mid" aria-hidden="true"></div>
+
+    <section class="install">
+      <h1>Установите приложение</h1>
+      <p>Добавьте иконку на главный экран — так удобнее возвращаться</p>
+      <div class="plats">
+        <button class="plat" type="button" data-install="android">
+          <svg class="ico" width="16" height="18" viewBox="0 0 18 20" fill="none" aria-hidden="true">
+            <path d="M5.49922 12.1547H5.65922M11.8992 12.1547H12.0592M8.69922 0.700195V5.60929M3.89922 5.60929H13.4992C15.2665 5.60929 16.6992 7.07454 16.6992 8.88201V15.4275C16.6992 17.2349 15.2665 18.7002 13.4992 18.7002H3.89922C2.13191 18.7002 0.699219 17.2349 0.699219 15.4275V8.88201C0.699219 7.07454 2.13191 5.60929 3.89922 5.60929Z" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <span>
+            <span class="plat-name">Android</span>
+            <span class="plat-sub">На экран Домой</span>
+          </span>
+        </button>
+        <button class="plat" type="button" data-install="ios">
+          <svg class="ico" width="13" height="16" viewBox="0 0 14 17" fill="none" aria-hidden="true">
+            <path d="M11.2187 8.3C11.2187 6.3 12.8187 5.3 12.9187 5.2C11.9187 3.8 10.4187 3.6 9.91872 3.6C8.61872 3.5 7.41872 4.4 6.81872 4.4C6.21872 4.4 5.21872 3.7 4.11872 3.7C2.71872 3.7 1.41872 4.5 0.718721 5.8C-0.781279 8.4 0.318721 12.2 1.71872 14.3C2.41872 15.3 3.21872 16.4 4.31872 16.4C5.31872 16.4 5.71872 15.7 7.01872 15.7C8.31872 15.7 8.61872 16.4 9.71872 16.4C10.8187 16.4 11.5187 15.4 12.2187 14.4C13.0187 13.3 13.3187 12.2 13.3187 12.2C13.3187 12.2 11.2187 11.4 11.2187 9V8.3ZM9.41872 2.7C10.0187 2 10.4187 1 10.3187 0C9.31872 0.1 8.21872 0.7 7.61872 1.5C7.01872 2.2 6.51872 3.2 6.71872 4.1C7.71872 4.2 8.71872 3.6 9.41872 2.7Z" fill="white"/>
+          </svg>
+          <span>
+            <span class="plat-name">iOS</span>
+            <span class="plat-sub">На экран Домой</span>
+          </span>
+        </button>
+      </div>
+    </section>
+  </main>
+  <div class="sheet-root" id="install-sheet" aria-hidden="true">
+    <button class="sheet-dim" type="button" data-install-close aria-label="Закрыть"></button>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="install-title">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <button class="sheet-x" type="button" data-install-close aria-label="Закрыть">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4L12 12M12 4L4 12" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <div id="install-ios">
+        <h2 id="install-title">iPhone</h2>
+        <p class="sheet-lead">Иконка ЯРекрут появится на экране «Домой», и кабинет будет открываться как обычное приложение.</p>
+        <div class="how">
+          <div class="how-step">
+            <span class="how-n">1</span>
+            <span class="how-text"><b>Откройте эту страницу в Safari.</b> Если ссылка открылась в Telegram, WhatsApp или почте, нажмите ⋯ и выберите «Открыть в Safari».</span>
+          </div>
+          <div class="how-step">
+            <span class="how-n">2</span>
+            <span class="how-text"><b>Нажмите «Поделиться».</b> Это квадрат со стрелкой вверх ⬆️. Он внизу экрана. Не видите? Нажмите ⋯ внизу, кнопка будет в меню.</span>
+          </div>
+          <div class="how-step">
+            <span class="how-n">3</span>
+            <span class="how-text"><b>Выберите «На экран „Домой“».</b> Не видите строку? Пролистайте меню вниз.</span>
+          </div>
+          <div class="how-step">
+            <span class="how-n">4</span>
+            <span class="how-text"><b>Нажмите «Добавить» справа вверху.</b> Название менять не нужно. Если есть переключатель «Открывать как веб-приложение», оставьте его включённым.</span>
+          </div>
+        </div>
+        <p class="how-done"><b>Готово!</b> Иконка ЯРекрут появилась на экране «Домой».</p>
+        <div class="how-else">
+          <b>Другой браузер?</b>
+          <p>Chrome и другие браузеры тоже подойдут: кнопка «Поделиться» там обычно справа вверху или в меню ⋯, дальше всё так же.</p>
+        </div>
+      </div>
+      <div id="install-android" hidden>
+        <h2>Android</h2>
+        <p class="sheet-lead">Иконка ЯРекрут появится на главном экране, и кабинет будет открываться как обычное приложение.</p>
+        <div class="how">
+          <div class="how-step">
+            <span class="how-n">1</span>
+            <span class="how-text"><b>Откройте эту страницу в Chrome.</b> Если ссылка открылась в Telegram или другом приложении, нажмите ⋮ и выберите «Открыть в Chrome».</span>
+          </div>
+          <div class="how-step">
+            <span class="how-n">2</span>
+            <span class="how-text"><b>Нажмите ⋮ справа вверху.</b></span>
+          </div>
+          <div class="how-step">
+            <span class="how-n">3</span>
+            <span class="how-text"><b>Выберите «Установить приложение» или «Добавить на главный экран».</b> Не видите пункт? Пролистайте меню вниз.</span>
+          </div>
+          <div class="how-step">
+            <span class="how-n">4</span>
+            <span class="how-text"><b>Нажмите «Установить» или «Добавить».</b> Если телефон спросит, куда поместить значок, выберите главный экран.</span>
+          </div>
+        </div>
+        <p class="how-done"><b>Готово!</b> Иконка ЯРекрут появилась среди приложений.</p>
+        <div class="how-else">
+          <b>Другой браузер?</b>
+          <p>Яндекс Браузер: ⋮ → «Добавить ярлык»</p>
+          <p>Samsung Internet: ☰ → «Добавить на главный экран»</p>
+        </div>
+      </div>
+      <button class="btn btn-register sheet-ok" type="button" data-install-close>Понятно</button>
+    </div>
+  </div>
+
+
+    <main class="screen screen-reg">
+    <a class="back" href="#/">
+      <svg class="back-ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10.2 3.15L5.7 7.65L10.2 12.15" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      Назад
+    </a>
+    <div class="reg-wrap">
+      <form class="card" action="#/register" method="get">
+        <h1 class="reg-title">Регистрация</h1>
+        <p class="reg-sub">Код придёт на почту</p>
+        <div class="fields">
+          <div class="field">
+            <label for="fio">ФИО</label>
+            <input id="fio" name="fio" type="text" autocomplete="name" placeholder="Имя Фамилия Отчество">
+          </div>
+          <div class="field">
+            <label for="phone">ТЕЛЕФОН</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+79000000000">
+          </div>
+          <div class="field">
+            <label for="email">ПОЧТА</label>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@mail.com">
+          </div>
+          <div class="check">
+            <input id="policy" name="policy" type="checkbox">
+            <label class="box" for="policy"></label>
+            <span class="check-text">Согласен с <a href="https://za-edinstvo.ru/politika-konfidencialnosti/" target="_blank" rel="noopener">политикой обработки ПД</a></span>
+          </div>
+          <div class="check">
+            <input id="offer" name="offer" type="checkbox">
+            <label class="box" for="offer"></label>
+            <span class="check-text">Согласен с условиями <a href="https://za-edinstvo.ru/polzovatelskoe-soglashenie/" target="_blank" rel="noopener">оферты</a></span>
+          </div>
+          <p class="form-error" hidden></p>
+          <button class="btn btn-register btn-submit" type="submit">Зарегистрироваться</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+
+    <main class="screen screen-login">
+    <a class="back" href="#/">
+      <svg class="back-ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10.2 3.15L5.7 7.65L10.2 12.15" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      Назад
+    </a>
+    <div class="reg-wrap">
+      <form class="card" id="login-form" action="#/login" method="get">
+        <h1 class="reg-title">Вход</h1>
+        <p class="reg-sub">Код придёт на почту</p>
+        <div class="fields">
+          <div class="field">
+            <label for="login-email">ПОЧТА</label>
+            <input id="login-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@mail.com">
+          </div>
+          <p class="form-error" hidden></p>
+          <button class="btn btn-register btn-enter" type="submit">Войти</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+
+    <main class="screen screen-reg-code">
+    <a class="back" href="#/register">
+      <svg class="back-ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10.2 3.15L5.7 7.65L10.2 12.15" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      Назад
+    </a>
+    <div class="reg-wrap">
+      <form class="card" id="register-code-form">
+        <h1 class="reg-title">Регистрация</h1>
+        <div class="fields code-fields">
+          <div class="field">
+            <label for="reg-code">КОД ИЗ ПИСЬМА</label>
+            <input id="reg-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+          </div>
+          <p class="form-error" hidden></p>
+          <button class="btn btn-register btn-submit" type="submit">Зарегистрироваться</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+
+    <main class="screen screen-login-code">
+    <a class="back" href="#/login">
+      <svg class="back-ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10.2 3.15L5.7 7.65L10.2 12.15" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      Назад
+    </a>
+    <div class="reg-wrap">
+      <form class="card" id="login-code-form">
+        <h1 class="reg-title">Вход</h1>
+        <div class="fields code-fields">
+          <div class="field">
+            <label for="login-code">КОД ИЗ ПИСЬМА</label>
+            <input id="login-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+          </div>
+          <p class="form-error" hidden></p>
+          <button class="btn btn-register btn-enter" type="submit">Войти</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+
+    <main class="screen screen-list">
+    <div class="list-scroll">
+      <h1 class="list-title">Направления</h1>
+      <div class="chips" id="chips">
+        <button class="chip is-on" type="button" data-filter="all">Все</button>
+        <button class="chip" type="button" data-filter="rf">Граждане РФ</button>
+        <button class="chip" type="button" data-filter="foreign">Иностранцы</button>
+        <button class="chip" type="button" data-filter="hep">Гепатит</button>
+        <button class="chip" type="button" data-filter="hiv">ВИЧ</button>
+      </div>
+      <div id="direction-list"></div>
+      <p class="admin-empty" id="direction-empty" hidden>Пока нет направлений</p>
+    </div>
+    <nav class="tabbar">
+      <a class="tab is-on" href="#/vacancies">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 10.5L12 4.5L19.5 10.5V19.2C19.5 19.7 19.1 20.1 18.6 20.1H15.2V14.8H8.8V20.1H5.4C4.9 20.1 4.5 19.7 4.5 19.2V10.5Z" stroke="#2C5C38" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Направления
+      </a>
+      <a class="tab" href="#/requests">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 4.5H8C6.89543 4.5 6 5.39543 6 6.5V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V6.5C18 5.39543 17.1046 4.5 16 4.5Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M9 9H15M9 12.5H15M9 16H13" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Заявки
+      </a>
+      <a class="tab" href="#/profile">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 12.1998C13.7681 12.1998 15.2008 10.7671 15.2008 8.9998C15.2008 7.23249 13.7681 5.7998 12.0008 5.7998C10.2335 5.7998 8.80078 7.23249 8.80078 8.9998C8.80078 10.7671 10.2335 12.1998 12.0008 12.1998Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M6.19922 18.7998C7.09922 16.1998 9.19922 14.7998 11.9992 14.7998C14.7992 14.7998 16.8992 16.1998 17.7992 18.7998" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Профиль
+      </a>
+      <button class="tab" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 19.1998C15.9772 19.1998 19.2008 15.9763 19.2008 11.9998C19.2008 8.02335 15.9772 4.7998 12.0008 4.7998C8.02433 4.7998 4.80078 8.02335 4.80078 11.9998C4.80078 15.9763 8.02433 19.1998 12.0008 19.1998Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M12.0008 16.2002V16.0002M12.0008 8.2002C10.7008 8.2002 9.80078 9.0002 9.80078 10.0002" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Вопросы
+      </button>
+    </nav>
+  </main>
+
+
+    <main class="screen screen-apps">
+    <div class="list-scroll">
+      <h1 class="list-title">Мои заявки</h1>
+      <p class="apps-total">Всего 18 заявок</p>
+      <div class="seg" id="app-tabs">
+        <button class="seg-btn is-on" type="button" data-tab="active">Активные <span class="count">8</span></button>
+        <button class="seg-btn" type="button" data-tab="done">Завершённые <span class="count">10</span></button>
+      </div>
+      <div class="apps" id="app-list">
+        <article class="app" data-state="active">
+          <div class="app-top"><span class="app-name">Егоров Павел Дмитриевич</span><span class="app-status">В обработке</span></div>
+          <div class="app-bottom"><span class="app-place">Военнослужащий г.Москва</span><span class="app-when">2 дня назад</span></div>
+        </article>
+        <article class="app" data-state="active">
+          <div class="app-top"><span class="app-name">Петров Алексей Сергеевич</span><span class="app-status">В обработке</span></div>
+          <div class="app-bottom"><span class="app-place">Военнослужащий г.Москва</span><span class="app-when">2 дня назад</span></div>
+        </article>
+        <article class="app" data-state="active">
+          <div class="app-top"><span class="app-name">Тимофеев Роман Алексеевич</span><span class="app-status is-ok">Принят</span></div>
+          <div class="app-bottom"><span class="app-place">Военнослужащий г.Чебоксары</span><span class="app-when">4 дня назад</span></div>
+        </article>
+        <article class="app" data-state="active">
+          <div class="app-top"><span class="app-name">Сидоров Дмитрий Владимирович</span><span class="app-status is-ok">Принят</span></div>
+          <div class="app-bottom"><span class="app-place">Военнослужащий г.Магадан</span><span class="app-when">5 дней назад</span></div>
+        </article>
+      </div>
+      <a class="btn btn-register apps-add" href="#/country">Добавить кандидата</a>
+    </div>
+    <nav class="tabbar">
+      <a class="tab" href="#/vacancies">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 10.5L12 4.5L19.5 10.5V19.2C19.5 19.7 19.1 20.1 18.6 20.1H15.2V14.8H8.8V20.1H5.4C4.9 20.1 4.5 19.7 4.5 19.2V10.5Z" stroke="#8E8E93" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Направления
+      </a>
+      <a class="tab is-on" href="#/requests">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 4.5H8C6.89543 4.5 6 5.39543 6 6.5V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V6.5C18 5.39543 17.1046 4.5 16 4.5Z" stroke="#2C5C38" stroke-width="1.7"/><path d="M9 9H15M9 12.5H15M9 16H13" stroke="#2C5C38" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Заявки
+      </a>
+      <a class="tab" href="#/profile">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 12.1998C13.7681 12.1998 15.2008 10.7671 15.2008 8.9998C15.2008 7.23249 13.7681 5.7998 12.0008 5.7998C10.2335 5.7998 8.80078 7.23249 8.80078 8.9998C8.80078 10.7671 10.2335 12.1998 12.0008 12.1998Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M6.19922 18.7998C7.09922 16.1998 9.19922 14.7998 11.9992 14.7998C14.7992 14.7998 16.8992 16.1998 17.7992 18.7998" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Профиль
+      </a>
+      <button class="tab" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 19.1998C15.9772 19.1998 19.2008 15.9763 19.2008 11.9998C19.2008 8.02335 15.9772 4.7998 12.0008 4.7998C8.02433 4.7998 4.80078 8.02335 4.80078 11.9998C4.80078 15.9763 8.02433 19.1998 12.0008 19.1998Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M12.0008 16.2002V16.0002M12.0008 8.2002C10.7008 8.2002 9.80078 9.0002 9.80078 10.0002" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Вопросы
+      </button>
+    </nav>
+  </main>
+
+
+    <main class="screen screen-request">
+    <a class="back detail-back" href="#/requests">
+      <svg class="back-ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10.2 3.15L5.7 7.65L10.2 12.15" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      Назад
+    </a>
+    <h1 class="list-title">Мои заявки</h1>
+    <p class="apps-total">Всего 18 заявок</p>
+    <article class="person">
+      <div class="person-top">
+        <span class="app-name" id="req-name">Тимофеев Роман Алексеевич</span>
+        <span class="pill" id="req-status">Принят</span>
+      </div>
+      <p class="person-place" id="req-place">Военнослужащий г.Чебоксары</p>
+    </article>
+    <section class="block">
+      <h2 class="eyebrow">ДАННЫЕ КАНДИДАТА</h2>
+      <div class="row"><span>Возраст</span><b id="req-age">31 год (25.09.1994)</b></div>
+      <div class="row"><span>Телефон</span><b id="req-phone">+79031234512</b></div>
+      <div class="row"><span>Военный билет</span><b class="mil"><i>×</i><span id="req-mil">Нет</span></b></div>
+    </section>
+    <section class="block">
+      <h2 class="eyebrow">ПРИБЫТИЕ</h2>
+      <div class="row"><span>Адрес ПОВСК</span><b id="req-address">Чувашская Республика, г. Чебоксары, ул. Пирогова, 8А</b></div>
+    </section>
+    <form class="block ticket" id="ticket-form">
+      <h2 class="eyebrow">БИЛЕТЫ И ТОЧНАЯ ДАТА</h2>
+      <label class="ask" for="from-city">Откуда выезжает <i>*</i></label>
+      <input id="from-city" type="text" placeholder="Город или страна">
+      <p class="ask">Тип прибытия</p>
+      <div class="modes" id="modes">
+        <button class="mode is-on" type="button" data-mode="train">Ж/Д</button>
+        <button class="mode" type="button" data-mode="air">Авиа</button>
+        <button class="mode" type="button" data-mode="bus">Автобус</button>
+      </div>
+      <label class="ask" for="station">Название вокзала / аэропорта <i>*</i></label>
+      <input id="station" type="text" placeholder="Например: Казанский вокзал">
+      <label class="ask" for="arrival">Дата и время прибытия <i>*</i></label>
+      <input id="arrival" type="text" placeholder="">
+      <p class="ask">Фото билета</p>
+      <label class="file">
+        <input id="ticket-file" type="file" accept="image/*">
+        <b>Выбрать файлы</b>
+        <span id="ticket-file-name">файлы не выбраны</span>
+      </label>
+    </form>
+  </main>
+
+
+    <main class="screen screen-detail">
+    <a class="back detail-back" href="#/vacancies">
+      <svg class="back-ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10.2 3.15L5.7 7.65L10.2 12.15" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      Назад
+    </a>
+    <h1 class="list-title">Направления</h1>
+    <article class="v-card">
+      <div class="v-head"><h2 id="dir-title">Москва</h2></div>
+      <div class="v-meta"><span id="dir-citizen">Гражданство: РФ</span><i></i><span id="dir-gender">Мужчины</span><i></i><span id="dir-age">До 45 лет</span></div>
+      <div class="fee"><span>Ваше агентское</span><strong id="dir-fee">450 000 ₽</strong></div>
+      <div class="fact">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M14 4H4C2.89543 4 2 4.89543 2 6V12C2 13.1046 2.89543 14 4 14H14C15.1046 14 16 13.1046 16 12V6C16 4.89543 15.1046 4 14 4Z" stroke="#2C5C38" stroke-width="1.4"/><path d="M2 7.5H16" stroke="#2C5C38" stroke-width="1.4"/></svg>
+        <strong id="dir-tickets">Заказчик предоставляет билеты</strong>
+      </div>
+      <div class="fact">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 15.9999C9 15.9999 14 11.7999 14 7.8999C14 6.57382 13.4732 5.30205 12.5355 4.36437C11.5979 3.42669 10.3261 2.8999 9 2.8999C7.67392 2.8999 6.40215 3.42669 5.46447 4.36437C4.52678 5.30205 4 6.57382 4 7.8999C4 11.7999 9 15.9999 9 15.9999Z" stroke="#2C5C38" stroke-width="1.4"/><path d="M9.00039 9.2C9.88405 9.2 10.6004 8.48366 10.6004 7.6C10.6004 6.71634 9.88405 6 9.00039 6C8.11673 6 7.40039 6.71634 7.40039 7.6C7.40039 8.48366 8.11673 9.2 9.00039 9.2Z" stroke="#2C5C38" stroke-width="1.4"/></svg>
+        <span><strong id="dir-address-title">Адрес ПОВСК</strong><span id="dir-address">г. Москва, ул. Яблочкова, 5, стр. 1</span></span>
+      </div>
+    </article>
+    <section class="video-card">
+      <button class="player" type="button" aria-label="Как спросить голосового ассистента">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2C5C38"/><path d="M20 16.5L33 24L20 31.5V16.5Z" fill="white"/></svg>
+      </button>
+      <h2>Как спросить голосового ассистента</h2>
+      <p id="dir-video">Разрешите GPT доступ к Диску и скажите: таблица «ЯРекрут || База знаний по направлениям», лист «Москва».</p>
+    </section>
+    <section class="sheet-card">
+      <h2>Таблица направления</h2>
+      <p id="dir-sheet-note">Лист «Москва». Откройте на телефоне — таблица останется в Google Диске.</p>
+      <a class="sheet-link" id="dir-sheet-link" href="https://docs.google.com/spreadsheets/d/1Xs-XV1k0bU0iSlD3jFDxIvXY85vHYQnoS0CW-fVojfw/edit?usp=sharing" target="_blank" rel="noopener">Открыть Google Sheets</a>
+    </section>
+    <a class="btn btn-register detail-add" href="#/country">Добавить кандидата</a>
+  </main>
+
+    <main class="screen screen-profile">
+    <div class="list-scroll">
+      <h1 class="list-title" id="profile-name"></h1>
+      <p class="phone" id="profile-phone"></p>
+      <section class="balance">
+        <span>Текущий баланс</span>
+        <strong>1 000 000 ₽</strong>
+      </section>
+      <div class="profile-actions">
+        <a class="money-btn" href="#/profile">
+          <b>Вывести</b>
+          <span>1 000 000 ₽</span>
+        </a>
+        <a class="acts-btn" href="#/profile">
+          <b>Мои акты</b>
+          <span>История выплат</span>
+        </a>
+      </div>
+      <section class="bank">
+        <div class="bank-name">ПАО БАНК</div>
+        <div class="bank-row"><span>Р/с</span><b>****0101</b></div>
+        <p class="bank-note">Для изменения реквизитов обратитесь к Хантеру</p>
+      </section>
+      <a class="hunter" href="https://t.me/rekrut_hunter" target="_blank" rel="noopener">
+        <img alt="" src="data:image/png;base64,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">
+        <span><b>Чат с Хантером</b><span>Задайте вопрос</span></span>
+      </a>
+      <p class="channels-label">НАШИ КАНАЛЫ</p>
+      <a class="channel" href="https://t.me/" target="_blank" rel="noopener">
+        <span class="tg" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M15.5 3.2L2.8 8.1c-.9.3-.9 1.5.1 1.8l3.3.9 1.3 3.9c.3.8 1.3.9 1.8.2l1.8-2.4 3.4 2.5c.7.5 1.7.1 1.9-.7l2.2-9.4c.2-.9-.7-1.7-1.6-1.4L15.5 3.2Z" fill="white"/></svg>
+        </span>
+        <b>Telegram</b>
+      </a>
+    </div>
+    <nav class="tabbar">
+      <a class="tab" href="#/vacancies">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 10.5L12 4.5L19.5 10.5V19.2C19.5 19.7 19.1 20.1 18.6 20.1H15.2V14.8H8.8V20.1H5.4C4.9 20.1 4.5 19.7 4.5 19.2V10.5Z" stroke="#8E8E93" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Направления
+      </a>
+      <a class="tab" href="#/requests">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 4.5H8C6.89543 4.5 6 5.39543 6 6.5V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V6.5C18 5.39543 17.1046 4.5 16 4.5Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M9 9H15M9 12.5H15M9 16H13" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Заявки
+      </a>
+      <a class="tab is-on" href="#/profile">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 12.1998C13.7681 12.1998 15.2008 10.7671 15.2008 8.9998C15.2008 7.23249 13.7681 5.7998 12.0008 5.7998C10.2335 5.7998 8.80078 7.23249 8.80078 8.9998C8.80078 10.7671 10.2335 12.1998 12.0008 12.1998Z" stroke="#2C5C38" stroke-width="1.7"/><path d="M6.19922 18.7998C7.09922 16.1998 9.19922 14.7998 11.9992 14.7998C14.7992 14.7998 16.8992 16.1998 17.7992 18.7998" stroke="#2C5C38" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Профиль
+      </a>
+      <button class="tab" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 19.1998C15.9772 19.1998 19.2008 15.9763 19.2008 11.9998C19.2008 8.02335 15.9772 4.7998 12.0008 4.7998C8.02433 4.7998 4.80078 8.02335 4.80078 11.9998C4.80078 15.9763 8.02433 19.1998 12.0008 19.1998Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M12.0008 16.2002V16.0002M12.0008 8.2002C10.7008 8.2002 9.80078 9.0002 9.80078 10.0002" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Вопросы
+      </button>
+    </nav>
+  </main>
+
+    <main class="screen screen-apply">
+    <a class="wiz-leave" href="#/vacancy">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3.5L5.5 8L10 12.5" stroke="#2C5C38" stroke-width="1.7" stroke-linecap="round"/></svg>
+      Добавить кандидата
+    </a>
+    <p class="wiz-count" id="wiz-count">Шаг 1 из 6</p>
+    <div class="steps" id="wiz-steps">
+      <div class="step is-now"><span class="dot"><span class="num">1</span><svg class="tick" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.2L5.6 9.8L11 4.2" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="label">Страна</span></div>
+      <div class="step"><span class="dot"><span class="num">2</span><svg class="tick" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.2L5.6 9.8L11 4.2" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="label">Паспорт</span></div>
+      <div class="step"><span class="dot"><span class="num">3</span><svg class="tick" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.2L5.6 9.8L11 4.2" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="label">Данные</span></div>
+      <div class="step"><span class="dot"><span class="num">4</span><svg class="tick" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.2L5.6 9.8L11 4.2" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="label">Доки</span></div>
+      <div class="step"><span class="dot"><span class="num">5</span><svg class="tick" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.2L5.6 9.8L11 4.2" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="label">Прибытие</span></div>
+      <div class="step"><span class="dot"><span class="num">6</span><svg class="tick" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.2L5.6 9.8L11 4.2" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="label">Итог</span></div>
+    </div>
+
+    <section class="wiz-pane" data-step="1">
+      <h1 class="wiz-title">Выберите гражданство кандидата</h1>
+      <p class="wiz-lead">От этого зависит набор необходимых документов</p>
+      <button class="cit is-on" type="button" data-cit="rf">
+        <span class="cit-badge">RU</span>
+        <span class="cit-text"><strong>Гражданин РФ</strong><span>Паспорт, СНИЛС, ИНН</span></span>
+        <svg class="cit-check" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#2C5C38"/><path d="M6.5 11.2L9.4 14L15.6 7.6" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="cit" type="button" data-cit="foreign">
+        <span class="cit-badge cit-globe">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-width="1.4"/><path d="M3 11H19M11 3C13.2 5.4 13.2 16.6 11 19C8.8 16.6 8.8 5.4 11 3Z" stroke="currentColor" stroke-width="1.2"/></svg>
+        </span>
+        <span class="cit-text"><strong>Иностранный гражданин</strong><span>Потребуется миграционная карта и перевод паспорта</span></span>
+        <svg class="cit-check" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#2C5C38"/><path d="M6.5 11.2L9.4 14L15.6 7.6" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <p class="wiz-error" data-error="1" hidden></p>
+      <button class="wiz-next" type="button" data-go="passport">Далее</button>
+    </section>
+
+    <section class="wiz-pane" data-step="2" hidden>
+      <div class="wiz-banner" data-ban="passport">
+        <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong class="ban-title">Гражданин РФ</strong><span class="ban-sub">Потребуется СНИЛС и ИНН</span></span>
+      </div>
+      <p class="wiz-hint">Сфотографируйте разворот паспорта с фото</p>
+      <p class="wiz-doc-title">Паспорт (разворот с фото)</p>
+      <label class="drop">
+        <input id="passport-file" type="file" accept="image/*" multiple>
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M22 6H6C4.89543 6 4 6.89543 4 8V20C4 21.1046 4.89543 22 6 22H22C23.1046 22 24 21.1046 24 20V8C24 6.89543 23.1046 6 22 6Z" stroke="#2C5C38" stroke-width="1.5"/><path d="M11 14C12.1046 14 13 13.1046 13 12C13 10.8954 12.1046 10 11 10C9.89543 10 9 10.8954 9 12C9 13.1046 9.89543 14 11 14Z" stroke="#2C5C38" stroke-width="1.4"/><path d="M6.5 19.5L11 15L14 18L17 14.5L21.5 19.5" stroke="#2C5C38" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <strong>Нажмите или перетащите файлы</strong>
+        <span id="passport-note">до 2 файла · изображения · до 10.0 МБ</span>
+      </label>
+      <p class="wiz-hint">Убедитесь, что фото чёткое и хорошо освещено</p>
+      <p class="wiz-error" data-error="2" hidden></p>
+      <div class="wiz-actions">
+        <button class="wiz-prev" type="button" data-go="country">Назад</button>
+        <button class="wiz-next wiz-go" id="pass-next" type="button" data-go="data" disabled>Далее</button>
+      </div>
+    </section>
+
+    <section class="wiz-pane" data-step="3" hidden>
+      <div class="wiz-banner" data-ban="data">
+        <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong class="ban-title">Гражданин РФ</strong><span class="ban-sub">ФИО, дата рождения, телефон</span></span>
+      </div>
+      <label class="wiz-label" for="cand-fio">ФИО</label>
+      <input class="wiz-input" id="cand-fio" type="text" value="Егоров Павел Дмитриевич" autocomplete="name">
+      <label class="wiz-label" for="cand-birth">Дата рождения</label>
+      <input class="wiz-input" id="cand-birth" type="text" inputmode="numeric" value="12.08.1995" autocomplete="bday">
+      <label class="wiz-label" for="cand-phone">Телефон</label>
+      <input class="wiz-input" id="cand-phone" type="tel" value="+79035554433" autocomplete="tel">
+      <p class="wiz-label">Военный билет</p>
+      <div class="mil" id="mil">
+        <button type="button" data-mil="yes">Есть</button>
+        <button class="is-on" type="button" data-mil="no">Нет</button>
+      </div>
+      <label class="wiz-label" for="cand-ill">Заболевания</label>
+      <textarea class="wiz-area" id="cand-ill" placeholder="Если есть — напишите своими словами"></textarea>
+      <p class="wiz-error" data-error="3" hidden></p>
+      <div class="wiz-actions">
+        <button class="wiz-prev" type="button" data-go="passport">Назад</button>
+        <button class="wiz-next wiz-go" type="button" data-go="docs">Далее</button>
+      </div>
+    </section>
+
+    <section class="wiz-pane" data-step="4" hidden>
+      <div class="wiz-banner" data-ban="docs">
+        <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong class="ban-title">Гражданин РФ</strong><span class="ban-sub">СНИЛС, ИНН, родственник</span></span>
+      </div>
+      <div class="docs" id="docs-rf">
+        <label class="doc"><strong>СНИЛС</strong><span class="doc-line"><b>Выбрать файлы</b><span data-doc-status="snils">файл выбран</span></span><input type="file" accept="image/*,.pdf" data-doc-input="snils"></label>
+        <label class="doc"><strong>ИНН</strong><span class="doc-line"><b>Выбрать файлы</b><span data-doc-status="inn">файл выбран</span></span><input type="file" accept="image/*,.pdf" data-doc-input="inn"></label>
+        <label class="doc"><strong>Данные родственника</strong><span class="doc-line"><b>Выбрать файлы</b><span data-doc-status="relative">файл выбран</span></span><input type="file" accept="image/*,.pdf" data-doc-input="relative"></label>
+      </div>
+      <div class="docs" id="docs-foreign" hidden>
+        <label class="doc"><strong>Миграционная карта</strong><span class="doc-line"><b>Выбрать файлы</b><span data-doc-status="migration">файл выбран</span></span><input type="file" accept="image/*,.pdf" data-doc-input="migration"></label>
+        <label class="doc"><strong>Перевод паспорта</strong><span class="doc-line"><b>Выбрать файлы</b><span data-doc-status="translation">файл выбран</span></span><input type="file" accept="image/*,.pdf" data-doc-input="translation"></label>
+      </div>
+      <p class="wiz-error" data-error="4" hidden></p>
+      <div class="wiz-actions">
+        <button class="wiz-prev" type="button" data-go="data">Назад</button>
+        <button class="wiz-next wiz-go" type="button" data-go="arrival">Далее</button>
+      </div>
+    </section>
+
+    <section class="wiz-pane" data-step="5" hidden>
+      <div class="wiz-banner" data-ban="arrival">
+        <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong class="ban-title">Гражданин РФ</strong><span class="ban-sub">Билет можно приложить позже</span></span>
+      </div>
+      <label class="wiz-label" for="cand-city">Откуда выезжает</label>
+      <input class="wiz-input" id="cand-city" type="text" placeholder="Город" autocomplete="address-level2">
+      <p class="wiz-note">Точный билет, вокзал и время можно указать после того, как заявку примут.</p>
+      <p class="wiz-error" data-error="5" hidden></p>
+      <div class="wiz-actions">
+        <button class="wiz-prev" type="button" data-go="docs">Назад</button>
+        <button class="wiz-next wiz-go" type="button" data-go="summary">Далее</button>
+      </div>
+    </section>
+
+    <section class="wiz-pane" data-step="6" hidden>
+      <div class="wiz-banner" data-ban="summary">
+        <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong class="ban-title">Гражданин РФ</strong><span class="ban-sub">Военнослужащий г.Москва</span></span>
+      </div>
+      <h1 class="wiz-title wiz-center">Проверьте заявку</h1>
+      <p class="wiz-lead wiz-center">Если всё верно, заявка уйдёт в обработку.</p>
+      <div class="sums">
+        <section class="sum">
+          <h2>КАНДИДАТ</h2>
+          <div class="sum-row"><span>Вакансия</span><span class="val" id="sum-vac">г.Москва</span></div>
+          <div class="sum-row"><span>Гражданство</span><span class="val" id="sum-cit">Гражданин РФ</span></div>
+          <div class="sum-row"><span>ФИО</span><span class="val" id="sum-fio">Егоров П.Д.</span></div>
+          <div class="sum-row"><span>Рождение</span><span class="val" id="sum-birth">12.08.1995</span></div>
+          <div class="sum-row"><span>Телефон</span><span class="val" id="sum-phone">+79035554433</span></div>
+          <div class="sum-row"><span>Военный билет</span><span class="val" id="sum-mil">Нет</span></div>
+        </section>
+        <section class="sum" id="sum-docs-rf">
+          <h2>ДОКУМЕНТЫ</h2>
+          <div class="sum-row"><span>Паспорт</span><span class="val" id="sum-pass">разворот загружен</span></div>
+          <div class="sum-row"><span>СНИЛС</span><span class="val" data-sum-doc="snils">прикреплён</span></div>
+          <div class="sum-row"><span>ИНН</span><span class="val" data-sum-doc="inn">прикреплён</span></div>
+          <div class="sum-row"><span>Родственник</span><span class="val" data-sum-doc="relative">прикреплён</span></div>
+        </section>
+        <section class="sum" id="sum-docs-foreign" hidden>
+          <h2>ДОКУМЕНТЫ</h2>
+          <div class="sum-row"><span>Паспорт</span><span class="val" id="sum-pass-foreign">разворот загружен</span></div>
+          <div class="sum-row"><span>Миграционная карта</span><span class="val" data-sum-doc="migration">прикреплён</span></div>
+          <div class="sum-row"><span>Перевод паспорта</span><span class="val" data-sum-doc="translation">прикреплён</span></div>
+        </section>
+        <section class="sum">
+          <h2>ПРИБЫТИЕ</h2>
+          <div class="sum-row"><span>Откуда поедет</span><span class="val" id="sum-city">не указано</span></div>
+          <div class="sum-row"><span>Билет</span><span class="val">после принятия</span></div>
+        </section>
+      </div>
+      <p class="wiz-error" data-error="6" hidden></p>
+      <div class="wiz-actions">
+        <button class="wiz-prev" type="button" data-go="arrival">Назад</button>
+        <button class="wiz-next wiz-go" id="apply-send" type="button">Отправить</button>
+      </div>
+    </section>
+  </main>
+
+    <main class="screen screen-admin">
+    <div class="list-scroll">
+      <h1 class="list-title">Заявки</h1>
+      <select class="admin-filter" id="admin-filter">
+        <option value="">Все статусы</option>
+        <option value="processing">В обработке</option>
+        <option value="accepted">Принята</option>
+        <option value="departure">Выезд указан</option>
+        <option value="photo_review">Фото на проверке</option>
+        <option value="photo_rejected">Фото не принято</option>
+        <option value="approved">Контракт подтверждён</option>
+        <option value="rejected">Отклонена</option>
+        <option value="removed">Снята</option>
+      </select>
+      <div class="apps" id="admin-list"></div>
+      <p class="admin-empty" id="admin-empty" hidden>Пока нет заявок</p>
+    </div>
+    <nav class="tabbar">
+      <a class="tab is-on" href="#/admin">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 4.5H8C6.89543 4.5 6 5.39543 6 6.5V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V6.5C18 5.39543 17.1046 4.5 16 4.5Z" stroke="#2C5C38" stroke-width="1.7"/><path d="M9 9H15M9 12.5H15M9 16H13" stroke="#2C5C38" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Заявки
+      </a>
+      <a class="tab" href="#/admin-acts">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4.5H15L19 8.5V19.5C19 20.0523 18.5523 20.5 18 20.5H7C6.44772 20.5 6 20.0523 6 19.5V5.5C6 4.94772 6.44772 4.5 7 4.5Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M9 12H15M9 15.5H13" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Акты
+      </a>
+      <a class="tab" href="#/admin-dirs">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 10.5L12 4.5L19.5 10.5V19.2C19.5 19.7 19.1 20.1 18.6 20.1H15.2V14.8H8.8V20.1H5.4C4.9 20.1 4.5 19.7 4.5 19.2V10.5Z" stroke="#8E8E93" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Направления
+      </a>
+    </nav>
+  </main>
+  <main class="screen screen-admin-acts">
+    <div class="list-scroll">
+      <h1 class="list-title">Акты</h1>
+      <div class="apps" id="admin-acts"></div>
+      <p class="admin-empty" id="admin-acts-empty" hidden>Пока нет актов на оплате</p>
+    </div>
+    <nav class="tabbar">
+      <a class="tab" href="#/admin">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 4.5H8C6.89543 4.5 6 5.39543 6 6.5V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V6.5C18 5.39543 17.1046 4.5 16 4.5Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M9 9H15M9 12.5H15M9 16H13" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Заявки
+      </a>
+      <a class="tab is-on" href="#/admin-acts">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4.5H15L19 8.5V19.5C19 20.0523 18.5523 20.5 18 20.5H7C6.44772 20.5 6 20.0523 6 19.5V5.5C6 4.94772 6.44772 4.5 7 4.5Z" stroke="#2C5C38" stroke-width="1.7"/><path d="M9 12H15M9 15.5H13" stroke="#2C5C38" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Акты
+      </a>
+      <a class="tab" href="#/admin-dirs">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 10.5L12 4.5L19.5 10.5V19.2C19.5 19.7 19.1 20.1 18.6 20.1H15.2V14.8H8.8V20.1H5.4C4.9 20.1 4.5 19.7 4.5 19.2V10.5Z" stroke="#8E8E93" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Направления
+      </a>
+    </nav>
+  </main>
+  <main class="screen screen-admin-dirs">
+    <div class="list-scroll">
+      <h1 class="list-title">Направления</h1>
+      <div class="apps" id="admin-dirs"></div>
+      <p class="admin-empty" id="admin-dirs-empty" hidden>Пока нет направлений</p>
+      <form class="sum dir-form" id="dir-form">
+        <h2>НОВОЕ НАПРАВЛЕНИЕ</h2>
+        <label class="field">Название<input id="dir-name" type="text" placeholder="Например, Казань" required></label>
+        <label class="field">Гражданство
+          <select id="new-cit">
+            <option value="rf">Только РФ</option>
+            <option value="foreign">Только иностранцы</option>
+            <option value="both">РФ и иностранцы</option>
+          </select>
+        </label>
+        <label class="field">Кто<input id="new-gender" type="text" value="Мужчины"></label>
+        <label class="field">Возраст до<input id="new-age" type="text" inputmode="numeric" placeholder="45" required></label>
+        <label class="field">Агентское, ₽<input id="new-fee" type="text" inputmode="numeric" placeholder="450000" required></label>
+        <label class="field">Выплата кандидату, ₽<input id="new-payout" type="text" inputmode="numeric" placeholder="2300000"></label>
+        <label class="field">Билеты
+          <select id="new-tickets">
+            <option value="customer">Покупает заказчик</option>
+            <option value="recruiter">Покупает рекрут</option>
+          </select>
+        </label>
+        <label class="field">Подпись про билет<input id="new-tickets-label" type="text" value="Заказчик предоставляет билеты"></label>
+        <label class="field">Название адреса<input id="new-address-title" type="text" value="Адрес ПОВСК"></label>
+        <label class="field">Адрес<input id="new-address" type="text" placeholder="г. Москва, ул. Яблочкова, 5, стр. 1"></label>
+        <label class="field">Гепатит
+          <select id="new-hep"><option value="no">Нельзя</option><option value="yes">Можно</option></select>
+        </label>
+        <label class="field">ВИЧ
+          <select id="new-hiv"><option value="no">Нельзя</option><option value="yes">Можно</option></select>
+        </label>
+        <div class="field">Документы
+          <label class="dir-check"><input type="checkbox" value="snils" checked> СНИЛС</label>
+          <label class="dir-check"><input type="checkbox" value="inn" checked> ИНН</label>
+          <label class="dir-check"><input type="checkbox" value="relative" checked> Родственник</label>
+          <label class="dir-check"><input type="checkbox" value="migration"> Миграционная карта</label>
+          <label class="dir-check"><input type="checkbox" value="translation"> Перевод паспорта</label>
+        </div>
+        <label class="field">Показывать рекрутам
+          <select id="new-published"><option value="yes">Да</option><option value="no">Нет</option></select>
+        </label>
+        <p class="wiz-error" id="dir-error" hidden></p>
+        <button class="admin-go" type="submit">Добавить</button>
+      </form>
+    </div>
+    <nav class="tabbar">
+      <a class="tab" href="#/admin">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 4.5H8C6.89543 4.5 6 5.39543 6 6.5V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V6.5C18 5.39543 17.1046 4.5 16 4.5Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M9 9H15M9 12.5H15M9 16H13" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Заявки
+      </a>
+      <a class="tab" href="#/admin-acts">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4.5H15L19 8.5V19.5C19 20.0523 18.5523 20.5 18 20.5H7C6.44772 20.5 6 20.0523 6 19.5V5.5C6 4.94772 6.44772 4.5 7 4.5Z" stroke="#8E8E93" stroke-width="1.7"/><path d="M9 12H15M9 15.5H13" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Акты
+      </a>
+      <a class="tab is-on" href="#/admin-dirs">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 10.5L12 4.5L19.5 10.5V19.2C19.5 19.7 19.1 20.1 18.6 20.1H15.2V14.8H8.8V20.1H5.4C4.9 20.1 4.5 19.7 4.5 19.2V10.5Z" stroke="#2C5C38" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Направления
+      </a>
+    </nav>
+  </main>
+  <main class="screen screen-admin-request">
+    <a class="back" href="#/admin">
+      <svg class="back-ico" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10.2 3.15L5.7 7.65L10.2 12.15" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/></svg>
+      Назад
+    </a>
+    <div id="admin-card"></div>
+    <p class="admin-empty" id="admin-card-error" hidden></p>
+  </main>
+
+    <script>
+    var SERVER_METHODS = [
+      'sendRegisterCode', 'confirmRegister', 'sendLoginCode', 'confirmLogin', 'getProfile',
+      'saveApplication', 'directions', 'adminList', 'adminGet', 'adminAct',
+      'adminSaveRequisites', 'adminActs', 'adminMarkPaid', 'adminCreateDirection'
+    ];
+    function scriptRun() {
+      if (!window.YREKRUT_API && window.google && google.script && google.script.run) return google.script.run;
+      var onOk = function () {};
+      var onFail = function () {};
+      var runner = {
+        withSuccessHandler: function (fn) { onOk = fn; return runner; },
+        withFailureHandler: function (fn) { onFail = fn; return runner; }
+      };
+      SERVER_METHODS.forEach(function (name) {
+        runner[name] = function () {
+          var body = JSON.stringify({ method: name, args: Array.prototype.slice.call(arguments) });
+          fetch(window.YREKRUT_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: body
+          }).then(function (response) {
+            if (!response.ok) throw new Error('http ' + response.status);
+            return response.json();
+          }).then(function (data) { onOk(data); }, function () { onFail(); });
+        };
+      });
+      return runner;
+    }
+    var SESSION_MS = 10 * 60 * 1000;
+    var currentDirection = null;
+    var directionItems = [];
+    var applyMap = {
+      '#/country': 1,
+      '#/passport': 2,
+      '#/data': 3,
+      '#/docs': 4,
+      '#/arrival': 5,
+      '#/summary': 6
+    };
+    function saveSession(token, role) {
+      localStorage.setItem('yarekrut_session', JSON.stringify({
+        token: token,
+        role: role || 'recruiter',
+        until: Date.now() + SESSION_MS
+      }));
+    }
+    function isAdminHash(hash) {
+      return hash === '#/admin' || hash === '#/admin-acts' || hash === '#/admin-dirs' || hash.indexOf('#/admin-request/') === 0;
+    }
+    function readSession() {
+      try {
+        var data = JSON.parse(localStorage.getItem('yarekrut_session') || '');
+        if (!data || !data.token || !data.until || Date.now() > data.until) {
+          localStorage.removeItem('yarekrut_session');
+          return null;
+        }
+        return data;
+      } catch (error) {
+        return null;
+      }
+    }
+    function showScreen() {
+      var hash = location.hash;
+      var session = readSession();
+      var admin = !!(session && session.role === 'admin');
+      var adminHash = isAdminHash(hash);
+      var inside = hash === '#/vacancies' || hash === '#/vacancy' || hash === '#/requests' || hash === '#/request' || hash === '#/profile' || applyMap[hash];
+      if (session && (hash === '' || hash === '#' || hash === '#/')) {
+        location.hash = admin ? '#/admin' : '#/vacancies';
+        return;
+      }
+      if (admin && !adminHash) {
+        location.hash = '#/admin';
+        return;
+      }
+      if (adminHash && !admin) {
+        location.hash = session ? '#/vacancies' : '#/';
+        return;
+      }
+      if (!session && inside) {
+        location.hash = '#/';
+        return;
+      }
+      document.documentElement.classList.toggle('is-register', hash === '#/register');
+      document.documentElement.classList.toggle('is-register-code', hash === '#/register-code');
+      document.documentElement.classList.toggle('is-login', hash === '#/login');
+      document.documentElement.classList.toggle('is-login-code', hash === '#/login-code');
+      document.documentElement.classList.toggle('is-list', hash === '#/vacancies');
+      document.documentElement.classList.toggle('is-detail', hash === '#/vacancy');
+      document.documentElement.classList.toggle('is-apps', hash === '#/requests');
+      document.documentElement.classList.toggle('is-profile', hash === '#/profile');
+      document.documentElement.classList.toggle('is-request', hash === '#/request');
+      document.documentElement.classList.toggle('is-apply', !!applyMap[hash]);
+      document.documentElement.classList.toggle('is-admin', hash === '#/admin');
+      document.documentElement.classList.toggle('is-admin-acts', hash === '#/admin-acts');
+      document.documentElement.classList.toggle('is-admin-dirs', hash === '#/admin-dirs');
+      document.documentElement.classList.toggle('is-admin-request', hash.indexOf('#/admin-request/') === 0);
+      if (applyMap[hash]) paintApply(applyMap[hash]);
+      if (hash === '#/profile') loadProfile();
+      if (hash === '#/vacancies') loadDirections();
+      if (hash === '#/vacancy') paintDirectionDetail();
+      if (hash === '#/admin') loadAdminList();
+      if (hash === '#/admin-acts') loadAdminActs();
+      if (hash === '#/admin-dirs') loadAdminDirections();
+      if (hash.indexOf('#/admin-request/') === 0) loadAdminRequest(decodeURIComponent(hash.slice('#/admin-request/'.length)));
+      clearError();
+    }
+    function showError(text) {
+      clearError();
+      var screens = {
+        '#/register': '.screen-reg',
+        '#/register-code': '.screen-reg-code',
+        '#/login': '.screen-login',
+        '#/login-code': '.screen-login-code'
+      };
+      var box = document.querySelector(screens[location.hash] || '');
+      if (!box) return;
+      var note = box.querySelector('.form-error');
+      note.hidden = false;
+      note.textContent = text;
+    }
+    function paintProfile(fio, phone) {
+      var name = document.getElementById('profile-name');
+      var tel = document.getElementById('profile-phone');
+      if (!name || !tel) return;
+      if (fio) name.textContent = fio;
+      tel.textContent = phone || '';
+    }
+    function loadProfile() {
+      var session = readSession();
+      if (!session) return;
+      scriptRun()
+        .withSuccessHandler(function (result) {
+          if (!result || !result.ok) return;
+          paintProfile(result.fio, result.phone);
+        })
+        .withFailureHandler(function () {})
+        .getProfile(session.token);
+    }
+    function clearError() {
+      document.querySelectorAll('.form-error').forEach(function (el) { el.hidden = true; el.textContent = ''; });
+    }
+    function runServer(name, args, onOk) {
+      var runner = scriptRun()
+        .withSuccessHandler(function (result) {
+          if (!result || !result.ok) {
+            showError(result && result.error ? result.error : 'Не получилось');
+            return;
+          }
+          onOk(result);
+        })
+        .withFailureHandler(function () {
+          showError('Не удалось связаться с кабинетом. Проверьте интернет и попробуйте ещё раз.');
+        });
+      runner[name].apply(runner, args);
+    }
+    window.addEventListener('hashchange', function () {
+      closeInstall();
+      showScreen();
+    });
+    showScreen();
+    function openInstall(which) {
+      var ios = document.getElementById('install-ios');
+      var android = document.getElementById('install-android');
+      ios.hidden = which !== 'ios';
+      android.hidden = which !== 'android';
+      ios.querySelector('h2').id = which === 'ios' ? 'install-title' : '';
+      android.querySelector('h2').id = which === 'android' ? 'install-title' : '';
+      var root = document.getElementById('install-sheet');
+      root.querySelector('.sheet').scrollTop = 0;
+      root.classList.add('is-open');
+      root.setAttribute('aria-hidden', 'false');
+    }
+    function closeInstall() {
+      var root = document.getElementById('install-sheet');
+      if (!root) return;
+      root.classList.remove('is-open');
+      root.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('[data-install]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        openInstall(button.getAttribute('data-install'));
+      });
+    });
+    document.getElementById('install-sheet').addEventListener('click', function (event) {
+      if (event.target.closest('[data-install-close]')) closeInstall();
+    });
+    var pushTimer = 0;
+    function slideTo(hash) {
+      var root = document.documentElement;
+      clearTimeout(pushTimer);
+      root.classList.remove('is-push-go');
+      root.classList.add('is-push');
+      location.hash = hash;
+      void document.body.offsetWidth;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          root.classList.add('is-push-go');
+        });
+      });
+      pushTimer = setTimeout(function () {
+        root.classList.remove('is-push-go');
+        root.classList.remove('is-push');
+      }, 600);
+    }
+    document.querySelector('.screen-reg .card').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var email = document.getElementById('email').value.trim();
+      var fio = document.getElementById('fio').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var policy = document.getElementById('policy').checked;
+      var offer = document.getElementById('offer').checked;
+      sessionStorage.setItem('auth', JSON.stringify({ email: email, fio: fio, phone: phone }));
+      slideTo('#/register-code');
+      runServer('sendRegisterCode', [email, fio, phone, policy, offer], function () {});
+    });
+    document.getElementById('register-code-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var auth = JSON.parse(sessionStorage.getItem('auth') || '{}');
+      runServer('confirmRegister', [auth.email || '', document.getElementById('reg-code').value], function (result) {
+        saveSession(result.token);
+        paintProfile(result.fio, result.phone);
+        location.hash = '#/vacancies';
+      });
+    });
+    document.getElementById('login-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var email = document.getElementById('login-email').value.trim();
+      sessionStorage.setItem('auth', JSON.stringify({ email: email }));
+      slideTo('#/login-code');
+      runServer('sendLoginCode', [email], function () {});
+    });
+    document.getElementById('login-code-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var auth = JSON.parse(sessionStorage.getItem('auth') || '{}');
+      runServer('confirmLogin', [auth.email || '', document.getElementById('login-code').value], function (result) {
+        saveSession(result.token, result.role);
+        paintProfile(result.fio, result.phone);
+        location.hash = result.role === 'admin' ? '#/admin' : '#/vacancies';
+      });
+    });
+    var filters = { citizen: 'all', hep: false, hiv: false };
+    var people = {
+      'Егоров Павел Дмитриевич': { age: '—', phone: '—', mil: 'Нет', address: 'г. Москва, ул. Яблочкова, 5, стр. 1' },
+      'Петров Алексей Сергеевич': { age: '—', phone: '—', mil: 'Нет', address: 'г. Москва, ул. Яблочкова, 5, стр. 1' },
+      'Тимофеев Роман Алексеевич': { age: '31 год (25.09.1994)', phone: '+79031234512', mil: 'Нет', address: 'Чувашская Республика, г. Чебоксары, ул. Пирогова, 8А' },
+      'Сидоров Дмитрий Владимирович': { age: '—', phone: '—', mil: 'Нет', address: '—' }
+    };
+    document.getElementById('app-list').addEventListener('click', function (event) {
+      var card = event.target.closest('.app');
+      if (!card) return;
+      var name = card.querySelector('.app-name').textContent;
+      var status = card.querySelector('.app-status').textContent;
+      var place = card.querySelector('.app-place').textContent;
+      var extra = people[name] || { age: '—', phone: '—', mil: 'Нет', address: '—' };
+      document.getElementById('req-name').textContent = name;
+      document.getElementById('req-place').textContent = place;
+      document.getElementById('req-age').textContent = extra.age;
+      document.getElementById('req-phone').textContent = extra.phone;
+      document.getElementById('req-mil').textContent = extra.mil;
+      document.getElementById('req-address').textContent = extra.address;
+      var pill = document.getElementById('req-status');
+      pill.textContent = status;
+      pill.classList.toggle('is-wait', status !== 'Принят');
+      location.hash = '#/request';
+    });
+    document.getElementById('modes').addEventListener('click', function (event) {
+      var button = event.target.closest('.mode');
+      if (!button) return;
+      document.querySelectorAll('.mode').forEach(function (item) {
+        item.classList.toggle('is-on', item === button);
+      });
+    });
+    document.getElementById('ticket-file').addEventListener('change', function () {
+      var file = this.files && this.files[0];
+      document.getElementById('ticket-file-name').textContent = file ? file.name : 'файлы не выбраны';
+    });
+    document.getElementById('app-tabs').addEventListener('click', function (event) {
+      var button = event.target.closest('.seg-btn');
+      if (!button) return;
+      var tab = button.getAttribute('data-tab');
+      document.querySelectorAll('.seg-btn').forEach(function (item) {
+        item.classList.toggle('is-on', item === button);
+      });
+      document.querySelectorAll('.app').forEach(function (card) {
+        card.hidden = card.getAttribute('data-state') !== tab;
+      });
+    });
+    document.getElementById('chips').addEventListener('click', function (event) {
+      var chip = event.target.closest('.chip');
+      if (!chip) return;
+      var key = chip.getAttribute('data-filter');
+      if (key === 'all') {
+        filters.citizen = 'all';
+        filters.hep = false;
+        filters.hiv = false;
+      } else if (key === 'rf' || key === 'foreign') {
+        filters.citizen = filters.citizen === key ? 'all' : key;
+      } else if (key === 'hep') {
+        filters.hep = !filters.hep;
+      } else if (key === 'hiv') {
+        filters.hiv = !filters.hiv;
+      }
+      document.querySelectorAll('.chip').forEach(function (item) {
+        var name = item.getAttribute('data-filter');
+        var on = name === 'all' ? filters.citizen === 'all' && !filters.hep && !filters.hiv
+          : name === 'rf' || name === 'foreign' ? filters.citizen === name
+          : name === 'hep' ? filters.hep : filters.hiv;
+        item.classList.toggle('is-on', on);
+      });
+      document.querySelectorAll('.v-card').forEach(function (card) {
+        var ok = true;
+        if (filters.citizen === 'rf') ok = card.getAttribute('data-rf') === '1';
+        if (filters.citizen === 'foreign') ok = card.getAttribute('data-foreign') === '1';
+        if (filters.hep && card.getAttribute('data-hep') !== '1') ok = false;
+        if (filters.hiv && card.getAttribute('data-hiv') !== '1') ok = false;
+        card.hidden = !ok;
+      });
+    });
+    function defaultApply() {
+      return {
+        cit: 'rf',
+        passport: '',
+        fio: 'Егоров Павел Дмитриевич',
+        birth: '12.08.1995',
+        phone: '+79035554433',
+        mil: 'no',
+        illness: '',
+        docs: { snils: 'chosen', inn: 'chosen', relative: 'chosen', migration: 'chosen', translation: 'chosen' },
+        city: ''
+      };
+    }
+    function loadApply() {
+      try {
+        var data = JSON.parse(sessionStorage.getItem('yarekrut_apply') || '');
+        if (data && data.docs) return data;
+      } catch (error) {}
+      return defaultApply();
+    }
+    function saveApply(data) {
+      sessionStorage.setItem('yarekrut_apply', JSON.stringify(data));
+    }
+    function citTitle(cit) {
+      return cit === 'foreign' ? 'Иностранный гражданин' : 'Гражданин РФ';
+    }
+    function shortName(fio) {
+      var parts = fio.trim().split(/\s+/);
+      if (parts.length < 2) return fio.trim();
+      return parts[0] + ' ' + parts.slice(1).map(function (part) {
+        return part.charAt(0).toUpperCase() + '.';
+      }).join('');
+    }
+    function parseBirth(value) {
+      var match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value.trim());
+      if (!match) return null;
+      var date = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+      if (date.getFullYear() !== Number(match[3]) || date.getMonth() !== Number(match[2]) - 1 || date.getDate() !== Number(match[1])) return null;
+      return date;
+    }
+    function fullYears(date) {
+      var today = new Date();
+      var age = today.getFullYear() - date.getFullYear();
+      var month = today.getMonth() - date.getMonth();
+      if (month < 0 || (month === 0 && today.getDate() < date.getDate())) age -= 1;
+      return age;
+    }
+    function yearsWord(age) {
+      var n10 = age % 10;
+      var n100 = age % 100;
+      if (n10 === 1 && n100 !== 11) return age + ' год';
+      if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return age + ' года';
+      return age + ' лет';
+    }
+    function setWizError(step, text) {
+      document.querySelectorAll('[data-error]').forEach(function (el) {
+        var show = el.getAttribute('data-error') === String(step) && !!text;
+        el.hidden = !show;
+        el.textContent = show ? text : '';
+      });
+    }
+    function docLabel(value) {
+      if (!value) return 'файл не выбран';
+      if (value === 'chosen') return 'файл выбран';
+      return value;
+    }
+    function readFields(data) {
+      data.fio = document.getElementById('cand-fio').value.trim();
+      data.birth = document.getElementById('cand-birth').value.trim();
+      data.phone = document.getElementById('cand-phone').value.trim();
+      data.illness = document.getElementById('cand-ill').value.trim();
+      data.city = document.getElementById('cand-city').value.trim();
+      return data;
+    }
+    function paintApply(step) {
+      var data = loadApply();
+      document.getElementById('wiz-count').textContent = 'Шаг ' + step + ' из 6';
+      document.querySelectorAll('.step').forEach(function (item, index) {
+        var number = index + 1;
+        item.classList.toggle('is-now', number === step);
+        item.classList.toggle('is-done', number < step);
+      });
+      document.querySelectorAll('.wiz-pane').forEach(function (pane) {
+        pane.hidden = Number(pane.getAttribute('data-step')) !== step;
+      });
+      document.querySelectorAll('.cit').forEach(function (button) {
+        button.classList.toggle('is-on', button.getAttribute('data-cit') === data.cit);
+      });
+      var subs = {
+        passport: data.cit === 'rf' ? 'Потребуется СНИЛС и ИНН' : 'Потребуется миграционная карта и перевод паспорта',
+        data: 'ФИО, дата рождения, телефон',
+        docs: data.cit === 'rf' ? 'СНИЛС, ИНН, родственник' : 'Миграционная карта, перевод паспорта',
+        arrival: 'Билет можно приложить позже',
+        summary: 'Военнослужащий г.Москва'
+      };
+      document.querySelectorAll('[data-ban]').forEach(function (banner) {
+        banner.querySelector('.ban-title').textContent = citTitle(data.cit);
+        banner.querySelector('.ban-sub').textContent = subs[banner.getAttribute('data-ban')];
+      });
+      document.getElementById('docs-rf').hidden = data.cit !== 'rf';
+      document.getElementById('docs-foreign').hidden = data.cit === 'rf';
+      document.getElementById('sum-docs-rf').hidden = data.cit !== 'rf';
+      document.getElementById('sum-docs-foreign').hidden = data.cit === 'rf';
+      document.getElementById('passport-note').textContent = data.passport || 'до 2 файла · изображения · до 10.0 МБ';
+      document.getElementById('pass-next').disabled = !data.passport;
+      document.getElementById('cand-fio').value = data.fio;
+      document.getElementById('cand-birth').value = data.birth;
+      document.getElementById('cand-phone').value = data.phone;
+      document.getElementById('cand-ill').value = data.illness;
+      document.getElementById('cand-city').value = data.city;
+      document.querySelectorAll('#mil button').forEach(function (button) {
+        button.classList.toggle('is-on', button.getAttribute('data-mil') === data.mil);
+      });
+      document.querySelectorAll('[data-doc-status]').forEach(function (el) {
+        el.textContent = docLabel(data.docs[el.getAttribute('data-doc-status')]);
+      });
+      document.getElementById('sum-cit').textContent = citTitle(data.cit);
+      document.getElementById('sum-fio').textContent = shortName(data.fio);
+      document.getElementById('sum-birth').textContent = data.birth;
+      document.getElementById('sum-phone').textContent = data.phone;
+      document.getElementById('sum-mil').textContent = data.mil === 'yes' ? 'Есть' : 'Нет';
+      var passText = data.passport ? 'разворот загружен' : 'не загружен';
+      document.getElementById('sum-pass').textContent = passText;
+      document.getElementById('sum-pass-foreign').textContent = passText;
+      document.querySelectorAll('[data-sum-doc]').forEach(function (el) {
+        el.textContent = data.docs[el.getAttribute('data-sum-doc')] ? 'прикреплён' : 'не выбран';
+      });
+      document.getElementById('sum-city').textContent = data.city || 'не указано';
+      setWizError(step, '');
+    }
+    function dataError(data) {
+      if (!data.fio) return 'Укажите ФИО как в паспорте';
+      var birth = parseBirth(data.birth);
+      if (!birth || birth.getTime() > Date.now()) return 'Дата в формате ДД.ММ.ГГГГ';
+      var ageLimit = currentDirection && Number(currentDirection.ageTo) ? Number(currentDirection.ageTo) : 45;
+      if (fullYears(birth) > ageLimit) return 'На это направление берут до ' + ageLimit + ' лет';
+      if (data.phone.replace(/\D/g, '').length < 10) return 'Укажите телефон';
+      if (data.mil !== 'yes' && data.mil !== 'no') return 'Укажите, есть ли военный билет';
+      return '';
+    }
+    document.querySelector('.screen-apply').addEventListener('click', function (event) {
+      var cit = event.target.closest('[data-cit]');
+      if (cit) {
+        var picked = loadApply();
+        picked.cit = cit.getAttribute('data-cit');
+        saveApply(picked);
+        paintApply(1);
+        return;
+      }
+      var mil = event.target.closest('[data-mil]');
+      if (mil) {
+        var ticket = readFields(loadApply());
+        ticket.mil = mil.getAttribute('data-mil');
+        saveApply(ticket);
+        paintApply(3);
+        return;
+      }
+      var go = event.target.closest('[data-go]');
+      if (!go) return;
+      var target = go.getAttribute('data-go');
+      var data = readFields(loadApply());
+      saveApply(data);
+      if (go.classList.contains('wiz-next') || go.id === 'pass-next') {
+        var step = applyMap[location.hash];
+        if (step === 2 && !data.passport) {
+          setWizError(2, 'Добавьте фото разворота');
+          return;
+        }
+        if (step === 3) {
+          var problem = dataError(data);
+          if (problem) {
+            setWizError(3, problem);
+            return;
+          }
+        }
+        if (step === 4) {
+          var keys = data.cit === 'rf' ? ['snils', 'inn', 'relative'] : ['migration', 'translation'];
+          var missing = keys.some(function (key) { return !data.docs[key]; });
+          if (missing) {
+            setWizError(4, 'Прикрепите документы этого шага');
+            return;
+          }
+        }
+      }
+      location.hash = '#/' + target;
+    });
+    document.getElementById('passport-file').addEventListener('change', function () {
+      var files = Array.prototype.slice.call(this.files || []);
+      if (!files.length) return;
+      if (files.length > 2) {
+        setWizError(2, 'Можно приложить не больше двух файлов');
+        this.value = '';
+        return;
+      }
+      var heavy = files.some(function (file) { return file.size > 10 * 1024 * 1024; });
+      if (heavy) {
+        setWizError(2, 'Каждый файл должен быть до 10 МБ');
+        this.value = '';
+        return;
+      }
+      var data = loadApply();
+      data.passport = files.map(function (file) { return file.name; }).join(', ');
+      saveApply(data);
+      paintApply(2);
+    });
+    document.querySelectorAll('[data-doc-input]').forEach(function (input) {
+      input.addEventListener('change', function () {
+        var file = this.files && this.files[0];
+        if (!file) return;
+        var data = loadApply();
+        data.docs[this.getAttribute('data-doc-input')] = file.name;
+        saveApply(data);
+        paintApply(4);
+      });
+    });
+    ['cand-fio', 'cand-birth', 'cand-phone', 'cand-ill', 'cand-city'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', function () {
+        saveApply(readFields(loadApply()));
+      });
+    });
+    document.getElementById('apply-send').addEventListener('click', function () {
+      var data = readFields(loadApply());
+      var problem = dataError(data);
+      if (problem) {
+        setWizError(6, problem);
+        return;
+      }
+      if (!data.passport) {
+        setWizError(6, 'Нет фото паспорта');
+        return;
+      }
+      saveApply(data);
+      var sessionNow = readSession();
+      if (!sessionNow) {
+        setWizError(6, 'Сессия закончилась');
+        return;
+      }
+      scriptRun()
+        .withSuccessHandler(function (result) {
+          if (!result || !result.ok) {
+            setWizError(6, result && result.error ? result.error : 'Не получилось отправить');
+            return;
+          }
+          placeSentApplication(data);
+        })
+        .withFailureHandler(function () {
+          setWizError(6, 'Не удалось отправить заявку');
+        })
+        .saveApplication(sessionNow.token, {
+          citizenship: data.cit,
+          fio: data.fio,
+          birthDate: data.birth,
+          phone: data.phone,
+          military: data.mil,
+          diseases: data.illness,
+          fromCity: data.city,
+          directionTitle: currentDirection ? currentDirection.title : 'Москва',
+          vacancyId: currentDirection ? currentDirection.gid : '',
+          agentFee: currentDirection ? currentDirection.agentFee : 0,
+          passportFile: data.passport,
+          snilsFile: data.docs.snils,
+          innFile: data.docs.inn,
+          relativeFile: data.docs.relative,
+          migrationFile: data.docs.migration,
+          translationFile: data.docs.translation
+        });
+    });
+    function placeSentApplication(data) {
+      var birth = parseBirth(data.birth);
+      if (!people[data.fio]) {
+        people[data.fio] = {
+          age: yearsWord(fullYears(birth)) + ' (' + data.birth + ')',
+          phone: data.phone,
+          mil: data.mil === 'yes' ? 'Есть' : 'Нет',
+          address: 'г. Москва, ул. Яблочкова, 5, стр. 1'
+        };
+      }
+      var card = document.createElement('article');
+      card.className = 'app';
+      card.setAttribute('data-state', 'active');
+      card.innerHTML = '<div class="app-top"><span class="app-name"></span><span class="app-status">В обработке</span></div><div class="app-bottom"><span class="app-place">Военнослужащий г.Москва</span><span class="app-when">только что</span></div>';
+      card.querySelector('.app-name').textContent = data.fio;
+      document.getElementById('app-list').prepend(card);
+      var total = document.querySelector('.apps-total');
+      var totalMatch = /(\d+)/.exec(total.textContent);
+      if (totalMatch) {
+        var next = Number(totalMatch[1]) + 1;
+        var word = next % 10 === 1 && next % 100 !== 11 ? 'заявка' : next % 10 >= 2 && next % 10 <= 4 && (next % 100 < 12 || next % 100 > 14) ? 'заявки' : 'заявок';
+        total.textContent = 'Всего ' + next + ' ' + word;
+      }
+      var activeCount = document.querySelector('.seg-btn[data-tab="active"] .count');
+      if (activeCount) activeCount.textContent = String(Number(activeCount.textContent) + 1);
+      document.querySelectorAll('.seg-btn').forEach(function (button) {
+        button.classList.toggle('is-on', button.getAttribute('data-tab') === 'active');
+      });
+      document.querySelectorAll('.app').forEach(function (item) {
+        item.hidden = item.getAttribute('data-state') !== 'active';
+      });
+      location.hash = '#/requests';
+    }
+    var adminRows = [];
+    var adminAction = '';
+    var STATUS_LABEL = {
+      draft: 'Черновик',
+      processing: 'В обработке',
+      rejected: 'Отклонена',
+      accepted: 'Принята',
+      departure: 'Выезд указан',
+      photo_review: 'Фото на проверке',
+      photo_rejected: 'Фото не принято',
+      approved: 'Контракт подтверждён',
+      removed: 'Снята'
+    };
+    var ADMIN_REASONS = {
+      reject: [['health', 'Здоровье'], ['articles', 'Статьи'], ['age', 'Возраст'], ['narcologist', 'Учёт нарколога или психиатра'], ['not_ready', 'Не готов ехать'], ['in_work', 'Уже в работе'], ['other', 'Другое']],
+      remove: [['no_show', 'Не приехал'], ['no_sign', 'Не подписал'], ['contract_cancelled', 'Контракт расторгли'], ['customer_refused', 'Заказчик отказал в оплате'], ['other', 'Другое']],
+      photo: [['unreadable', 'Не читается'], ['wrong_person', 'Не тот человек'], ['no_stamp', 'Нет печати'], ['other', 'Другое']]
+    };
+    function moneyText(value) {
+      return String(Number(value) || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+    }
+    function adminCall(name, args, onOk) {
+      var session = readSession();
+      if (!session) return;
+      var runner = scriptRun()
+        .withSuccessHandler(function (result) {
+          if (!result || !result.ok) {
+            var err = document.getElementById('admin-card-error');
+            if (err && location.hash.indexOf('#/admin-request/') === 0) {
+              err.hidden = false;
+              err.textContent = result && result.error ? result.error : 'Не получилось';
+            }
+            return;
+          }
+          onOk(result);
+        })
+        .withFailureHandler(function () {});
+      runner[name].apply(runner, [session.token].concat(args));
+    }
+    function paintAdminList() {
+      var filter = document.getElementById('admin-filter').value;
+      var list = document.getElementById('admin-list');
+      var empty = document.getElementById('admin-empty');
+      list.innerHTML = '';
+      var shown = adminRows.filter(function (item) { return !filter || item.status === filter; });
+      empty.hidden = shown.length > 0;
+      shown.forEach(function (item) {
+        var card = document.createElement('article');
+        card.className = 'app';
+        card.setAttribute('data-admin-id', item.id);
+        card.innerHTML = '<div class="app-top"><span class="app-name"></span><span class="app-status"></span></div><div class="app-bottom"><span class="app-place"></span><span class="app-when"></span></div>';
+        card.querySelector('.app-name').textContent = item.fio;
+        card.querySelector('.app-status').textContent = STATUS_LABEL[item.status] || item.status;
+        card.querySelector('.app-place').textContent = item.directionTitle;
+        card.querySelector('.app-when').textContent = item.created;
+        list.appendChild(card);
+      });
+    }
+    function loadAdminList() {
+      adminCall('adminList', [], function (result) {
+        adminRows = result.items || [];
+        paintAdminList();
+      });
+    }
+    function loadAdminActs() {
+      adminCall('adminActs', [], function (result) {
+        var list = document.getElementById('admin-acts');
+        var empty = document.getElementById('admin-acts-empty');
+        list.innerHTML = '';
+        var items = result.items || [];
+        empty.hidden = items.length > 0;
+        items.forEach(function (item) {
+          var card = document.createElement('article');
+          card.className = 'sum';
+          var title = document.createElement('h2');
+          title.textContent = item.number || 'Акт';
+          card.appendChild(title);
+          card.appendChild(adminLine('Рекрут', item.recruiter));
+          card.appendChild(adminLine('Сумма', moneyText(item.amount)));
+          card.appendChild(adminLine('Статус', item.status === 'paid' ? 'Оплачено' : 'На оплате'));
+          if (item.status === 'paying') {
+            var button = document.createElement('button');
+            button.className = 'admin-pay';
+            button.type = 'button';
+            button.textContent = 'Деньги отправлены';
+            button.setAttribute('data-pay', item.id);
+            card.appendChild(button);
+          }
+          list.appendChild(card);
+        });
+      });
+    }
+    function adminLine(label, value) {
+      var row = document.createElement('div');
+      row.className = 'sum-row';
+      var name = document.createElement('span');
+      name.textContent = label;
+      var val = document.createElement('span');
+      val.className = 'val';
+      val.textContent = value || '—';
+      row.appendChild(name);
+      row.appendChild(val);
+      return row;
+    }
+    function adminSection(title, lines) {
+      var box = document.createElement('section');
+      box.className = 'sum';
+      var head = document.createElement('h2');
+      head.textContent = title;
+      box.appendChild(head);
+      lines.forEach(function (line) { box.appendChild(adminLine(line[0], line[1])); });
+      return box;
+    }
+    function adminButton(label, action, stop) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = stop ? 'admin-stop' : 'admin-go';
+      button.textContent = label;
+      button.setAttribute('data-act', action);
+      return button;
+    }
+    function paintAdminRequest(item) {
+      var box = document.getElementById('admin-card');
+      box.innerHTML = '';
+      var head = document.createElement('div');
+      head.className = 'person';
+      head.innerHTML = '<div class="person-top"><h1 class="list-title"></h1><span class="pill"></span></div>';
+      head.querySelector('h1').textContent = item.fio;
+      head.querySelector('.pill').textContent = STATUS_LABEL[item.status] || item.status;
+      box.appendChild(head);
+      box.appendChild(adminSection('КАНДИДАТ', [
+        ['Направление', item.directionTitle],
+        ['Гражданство', item.citizenship === 'foreign' ? 'Иностранный гражданин' : 'Гражданин РФ'],
+        ['Рождение', item.birthDate],
+        ['Телефон', item.phone],
+        ['Военный билет', item.military],
+        ['Заболевания', item.diseases],
+        ['Откуда', item.fromCity],
+        ['Агентское', moneyText(item.fee)]
+      ]));
+      box.appendChild(adminSection('ДОКУМЕНТЫ', [
+        ['Паспорт', item.passport],
+        ['СНИЛС', item.snils],
+        ['ИНН', item.inn],
+        ['Родственник', item.relative],
+        ['Миграционная карта', item.migration],
+        ['Перевод паспорта', item.translation]
+      ]));
+      box.appendChild(adminSection('РЕКРУТ', [
+        ['Имя', item.recruiterFio],
+        ['Почта', item.recruiterEmail],
+        ['Телефон', item.recruiterPhone]
+      ]));
+      if (item.accrualStatus) {
+        box.appendChild(adminSection('НАЧИСЛЕНИЕ', [
+          ['Статус', item.accrualStatus],
+          ['Резерв до', item.reserveUntil],
+          ['Оплата заказчика', item.customerPaid]
+        ]));
+      }
+      if (item.reason) box.appendChild(adminSection('ПРИЧИНА', [['Текст', item.reason]]));
+      var reqs = document.createElement('section');
+      reqs.className = 'sum admin-reqs';
+      reqs.innerHTML = '<h2>РЕКВИЗИТЫ</h2><select id="req-type"><option value="ip">ИП</option><option value="selfemployed">Самозанятый</option></select><textarea id="req-text" placeholder="Реквизиты, которые прислали Хантеру"></textarea>';
+      box.appendChild(reqs);
+      document.getElementById('req-type').value = item.requisitesType === 'selfemployed' ? 'selfemployed' : 'ip';
+      document.getElementById('req-text').value = item.requisitesText || '';
+      var actions = document.createElement('div');
+      actions.className = 'admin-actions';
+      actions.appendChild(adminButton('Сохранить реквизиты', 'requisites', true));
+      if (item.status === 'processing') {
+        actions.appendChild(adminButton('Принять', 'accept', false));
+        actions.appendChild(adminButton('Отклонить', 'reject', true));
+      }
+      if (item.status === 'photo_review') {
+        actions.appendChild(adminButton('Принять фото', 'photo_ok', false));
+        actions.appendChild(adminButton('Вернуть фото', 'photo_bad', true));
+      }
+      if (item.status === 'accepted' || item.status === 'departure' || item.status === 'photo_review' || item.status === 'photo_rejected' || item.status === 'approved') {
+        actions.appendChild(adminButton('Снять', 'remove', true));
+      }
+      if (item.status === 'approved' && !item.customerPaid) actions.appendChild(adminButton('Оплата заказчика пришла', 'customer_paid', false));
+      if (item.accrualStatus === 'reserve') actions.appendChild(adminButton('Снять резерв', 'cancel_reserve', true));
+      box.appendChild(actions);
+      var reason = document.createElement('div');
+      reason.className = 'admin-reason';
+      reason.id = 'admin-reason';
+      reason.hidden = true;
+      reason.innerHTML = '<select id="admin-reason-code"></select><textarea id="admin-reason-text" placeholder="Причина"></textarea><button class="admin-go" id="admin-reason-ok" type="button">Подтвердить</button>';
+      box.appendChild(reason);
+      box.setAttribute('data-id', item.id);
+      box.setAttribute('data-recruiter', item.recruiterId);
+    }
+    function loadAdminRequest(id) {
+      document.getElementById('admin-card').innerHTML = '';
+      document.getElementById('admin-card-error').hidden = true;
+      adminCall('adminGet', [id], function (result) { paintAdminRequest(result.item); });
+    }
+    function openReason(action, kind) {
+      adminAction = action;
+      var box = document.getElementById('admin-reason');
+      var select = document.getElementById('admin-reason-code');
+      box.hidden = false;
+      select.innerHTML = '';
+      if (!kind) {
+        select.hidden = true;
+        return;
+      }
+      select.hidden = false;
+      ADMIN_REASONS[kind].forEach(function (pair) {
+        var option = document.createElement('option');
+        option.value = pair[0];
+        option.textContent = pair[1];
+        select.appendChild(option);
+      });
+    }
+    function citizenText(value) {
+      if (value === 'foreign') return 'Гражданство: иностранцы';
+      if (value === 'both') return 'Гражданство: РФ и иностранцы';
+      return 'Гражданство: РФ';
+    }
+    function loadDirections() {
+      var session = readSession();
+      if (!session) return;
+      scriptRun().withSuccessHandler(function (result) {
+        var list = document.getElementById('direction-list');
+        var empty = document.getElementById('direction-empty');
+        list.innerHTML = '';
+        if (!result || !result.ok) {
+          empty.hidden = false;
+          empty.textContent = result && result.error ? result.error : 'Не удалось загрузить направления';
+          return;
+        }
+        directionItems = (result.items || []).filter(function (item) { return item.published && item.hasHeader; });
+        empty.hidden = directionItems.length > 0;
+        empty.textContent = 'Пока нет направлений';
+        directionItems.forEach(function (item) {
+          var card = document.createElement('a');
+          card.className = 'v-card';
+          card.href = '#/vacancy';
+          card.setAttribute('data-gid', item.gid);
+          card.setAttribute('data-rf', item.citizenship === 'foreign' ? '0' : '1');
+          card.setAttribute('data-foreign', item.citizenship === 'rf' ? '0' : '1');
+          card.setAttribute('data-hep', item.hepatitis ? '1' : '0');
+          card.setAttribute('data-hiv', item.hiv ? '1' : '0');
+          var admit = '';
+          if (item.hepatitis) admit += '<span class="tag">Гепатит</span>';
+          if (item.hiv) admit += '<span class="tag">Вич</span>';
+          card.innerHTML = '<div class="v-head"><h2></h2><span class="v-go" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8L6 12.5" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/></svg></span></div><div class="v-meta"><span class="c"></span><i></i><span class="g"></span><i></i><span class="a"></span></div><div class="fee"><span>Ваше агентское</span><strong class="fee-v"></strong></div><div class="pay"><span>Выплата кандидату</span><strong class="pay-v"></strong></div>' + (admit ? '<div class="admit"><span>Допуск:</span>' + admit + '</div>' : '');
+          card.querySelector('h2').textContent = item.title;
+          card.querySelector('.c').textContent = citizenText(item.citizenship);
+          card.querySelector('.g').textContent = item.genderLabel || '—';
+          card.querySelector('.a').textContent = item.ageTo ? 'До ' + item.ageTo + ' лет' : '—';
+          card.querySelector('.fee-v').textContent = moneyText(item.agentFee);
+          card.querySelector('.pay-v').textContent = moneyText(item.candidatePayout);
+          list.appendChild(card);
+        });
+      }).withFailureHandler(function () {
+        document.getElementById('direction-empty').hidden = false;
+      }).directions(session.token);
+    }
+    function paintDirectionDetail() {
+      var item = currentDirection;
+      if (!item) return;
+      document.getElementById('dir-title').textContent = item.title;
+      document.getElementById('dir-citizen').textContent = citizenText(item.citizenship);
+      document.getElementById('dir-gender').textContent = item.genderLabel || '—';
+      document.getElementById('dir-age').textContent = item.ageTo ? 'До ' + item.ageTo + ' лет' : '—';
+      document.getElementById('dir-fee').textContent = moneyText(item.agentFee);
+      document.getElementById('dir-tickets').textContent = item.ticketsLabel || '—';
+      document.getElementById('dir-address-title').textContent = item.addressTitle || 'Адрес';
+      document.getElementById('dir-address').textContent = item.address || '—';
+      document.getElementById('dir-video').textContent = 'Разрешите GPT доступ к Диску и скажите: таблица «ЯРекрут || База знаний по направлениям», лист «' + item.sheetName + '».';
+      document.getElementById('dir-sheet-note').textContent = 'Лист «' + item.sheetName + '». Откройте на телефоне — таблица останется в Google Диске.';
+      document.getElementById('dir-sheet-link').href = item.url;
+    }
+    function loadAdminDirections() {
+      var session = readSession();
+      if (!session) return;
+      scriptRun().withSuccessHandler(function (result) {
+        var list = document.getElementById('admin-dirs');
+        var empty = document.getElementById('admin-dirs-empty');
+        list.innerHTML = '';
+        if (!result || !result.ok) {
+          empty.hidden = false;
+          empty.textContent = result && result.error ? result.error : 'Не удалось загрузить направления';
+          return;
+        }
+        var items = result.items || [];
+        empty.hidden = items.length > 0;
+        empty.textContent = 'Пока нет направлений';
+        items.forEach(function (item) {
+          var card = document.createElement('article');
+          card.className = 'sum';
+          var title = document.createElement('h2');
+          title.textContent = item.title;
+          card.appendChild(title);
+          card.appendChild(adminLine('Лист', item.sheetName));
+          card.appendChild(adminLine('Рекрутам', item.published && item.hasHeader ? 'Показывается' : 'Скрыто'));
+          var link = document.createElement('a');
+          link.className = 'sheet-link';
+          link.href = item.url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = 'Открыть Google Sheets';
+          card.appendChild(link);
+          list.appendChild(card);
+        });
+      }).withFailureHandler(function () {
+        document.getElementById('admin-dirs-empty').hidden = false;
+      }).directions(session.token);
+    }
+    document.getElementById('direction-list').addEventListener('click', function (event) {
+      var card = event.target.closest('[data-gid]');
+      if (!card) return;
+      for (var i = 0; i < directionItems.length; i++) {
+        if (directionItems[i].gid === card.getAttribute('data-gid')) currentDirection = directionItems[i];
+      }
+    });
+    document.getElementById('new-tickets').addEventListener('change', function () {
+      document.getElementById('new-tickets-label').value = this.value === 'recruiter' ? 'Рекрут покупает билеты' : 'Заказчик предоставляет билеты';
+    });
+    document.getElementById('dir-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var docs = [];
+      document.querySelectorAll('#dir-form .dir-check input:checked').forEach(function (box) { docs.push(box.value); });
+      var err = document.getElementById('dir-error');
+      err.hidden = true;
+      var session = readSession();
+      if (!session) return;
+      scriptRun().withSuccessHandler(function (result) {
+        if (!result || !result.ok) {
+          err.hidden = false;
+          err.textContent = result && result.error ? result.error : 'Не получилось добавить';
+          return;
+        }
+        document.getElementById('dir-name').value = '';
+        loadAdminDirections();
+      }).withFailureHandler(function () {
+        err.hidden = false;
+        err.textContent = 'Не удалось добавить направление';
+      }).adminCreateDirection(session.token, {
+        title: document.getElementById('dir-name').value,
+        citizenship: document.getElementById('new-cit').value,
+        genderLabel: document.getElementById('new-gender').value,
+        ageTo: document.getElementById('new-age').value,
+        agentFee: document.getElementById('new-fee').value,
+        candidatePayout: document.getElementById('new-payout').value,
+        tickets: document.getElementById('new-tickets').value,
+        ticketsLabel: document.getElementById('new-tickets-label').value,
+        addressTitle: document.getElementById('new-address-title').value,
+        address: document.getElementById('new-address').value,
+        hepatitis: document.getElementById('new-hep').value === 'yes',
+        hiv: document.getElementById('new-hiv').value === 'yes',
+        docs: docs,
+        published: document.getElementById('new-published').value === 'yes'
+      });
+    });
+    document.getElementById('admin-filter').addEventListener('change', paintAdminList);
+    document.getElementById('admin-list').addEventListener('click', function (event) {
+      var card = event.target.closest('[data-admin-id]');
+      if (!card) return;
+      location.hash = '#/admin-request/' + encodeURIComponent(card.getAttribute('data-admin-id'));
+    });
+    document.getElementById('admin-acts').addEventListener('click', function (event) {
+      var button = event.target.closest('[data-pay]');
+      if (!button) return;
+      adminCall('adminMarkPaid', [button.getAttribute('data-pay')], function () { loadAdminActs(); });
+    });
+    document.getElementById('admin-card').addEventListener('click', function (event) {
+      var button = event.target.closest('[data-act]');
+      if (!button && event.target.id !== 'admin-reason-ok') return;
+      var id = document.getElementById('admin-card').getAttribute('data-id');
+      if (event.target.id === 'admin-reason-ok') {
+        var code = document.getElementById('admin-reason-code');
+        adminCall('adminAct', [id, adminAction, code.hidden ? '' : code.value, document.getElementById('admin-reason-text').value], function () {
+          loadAdminRequest(id);
+        });
+        return;
+      }
+      var action = button.getAttribute('data-act');
+      if (action === 'requisites') {
+        adminCall('adminSaveRequisites', [
+          document.getElementById('admin-card').getAttribute('data-recruiter'),
+          document.getElementById('req-type').value,
+          document.getElementById('req-text').value
+        ], function () { loadAdminRequest(id); });
+        return;
+      }
+      if (action === 'reject') return openReason(action, 'reject');
+      if (action === 'remove') return openReason(action, 'remove');
+      if (action === 'photo_bad') return openReason(action, 'photo');
+      if (action === 'cancel_reserve') return openReason(action, '');
+      adminCall('adminAct', [id, action, '', ''], function () { loadAdminRequest(id); });
+    });
   </script>
+
 </body>
 </html>
