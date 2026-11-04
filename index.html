@@ -623,6 +623,26 @@
       align-items: center;
       justify-content: center;
     }
+    .v-stop-row { margin-top: 8px; }
+    .v-stop {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 7px;
+      background: #B3261E;
+      color: #ffffff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 14px;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    .btn.is-disabled {
+      background: #E5E5EA !important;
+      color: #8E8E93 !important;
+      pointer-events: none;
+    }
     .v-meta {
       display: flex;
       align-items: center;
@@ -937,6 +957,7 @@
     }
     .detail-add { margin-top: 4px; text-align: center; }
     .screen-detail .v-card { margin-top: 0; }
+    .screen-detail .v-head { justify-content: flex-start; gap: 10px; }
     .screen-request { display: none; }
     html.is-request, html.is-request body { height: auto; overflow: auto; }
     html.is-request .screen-start,
@@ -1764,7 +1785,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261021-1ba014e7";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261104-c01f7257";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -2008,7 +2029,7 @@
     <h1 class="list-title">Направления</h1>
     <div class="state" id="vacancy-state"></div>
     <article class="v-card" data-dir-part>
-      <div class="v-head"><h2 id="dir-title"></h2></div>
+      <div class="v-head"><h2 id="dir-title"></h2><span id="dir-stop" class="v-stop" hidden>Временно стоп</span></div>
       <div class="v-meta"><span id="dir-citizen"></span><i></i><span id="dir-gender"></span><i></i><span id="dir-age"></span></div>
       <div class="fee"><span>Ваше агентское</span><strong id="dir-fee"></strong></div>
       <div class="fact">
@@ -3197,6 +3218,7 @@
       if (item.hiv) tags.push(h('span', { class: 'tag', text: 'Вич' }));
       return h('a', { class: 'v-card', href: '#/vacancy/' + encodeURIComponent(item.gid) }, [
         h('div', { class: 'v-head' }, [h('h2', { text: item.title }), h('span', { class: 'v-go', 'aria-hidden': 'true', html: ICONS.chevron })]),
+        item.stopped ? h('div', { class: 'v-stop-row' }, [h('span', { class: 'v-stop', text: item.statusLabel || 'Временно стоп' })]) : null,
         h('div', { class: 'v-meta' }, [
           h('span', { class: 'c', text: citizenText(item.citizenship) }), h('i'),
           h('span', { class: 'g', text: item.genderLabel || '—' }), h('i'),
@@ -3260,6 +3282,25 @@
       showDirectionParts(true);
       state.vacancy = item;
       $('#dir-title').textContent = item.title;
+      var stopBadge = $('#dir-stop');
+      if (stopBadge) {
+        stopBadge.hidden = !item.stopped;
+        stopBadge.textContent = item.statusLabel || 'Временно стоп';
+      }
+      var addLink = $('#dir-add');
+      if (addLink) {
+        if (item.stopped) {
+          addLink.classList.add('is-disabled');
+          addLink.setAttribute('aria-disabled', 'true');
+          addLink.removeAttribute('href');
+          addLink.textContent = item.statusLabel || 'Временно стоп';
+        } else {
+          addLink.classList.remove('is-disabled');
+          addLink.removeAttribute('aria-disabled');
+          addLink.setAttribute('href', '#');
+          addLink.textContent = 'Добавить кандидата';
+        }
+      }
       $('#dir-citizen').textContent = citizenText(item.citizenship);
       $('#dir-gender').textContent = item.genderLabel || '—';
       $('#dir-age').textContent = item.ageTo ? 'До ' + item.ageTo + ' лет' : '—';
@@ -3596,6 +3637,10 @@
     function startDraft() {
       var item = state.vacancy;
       if (!item) return;
+      if (item.stopped) {
+        toast(item.statusLabel || 'Временно стоп');
+        return;
+      }
       var draft = localDraft(item);
       state.draft = draft;
       putApp(draft);
