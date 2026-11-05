@@ -2061,7 +2061,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-a2b70216";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-fff59bcb";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -4503,12 +4503,11 @@
       var maxButton = $('[data-quick-max]', root);
       var maxLink = $('[data-quick-max-go]', root);
       var back = $('[data-quick-back]', root);
-      var hunter = state.config.hunter_url || LINKS.hunter;
       $all('[data-quick-hunter]', root).forEach(function (link) {
-        link.href = hunter;
+        link.href = LINKS.hunter;
         link.addEventListener('click', function () { setTimeout(close, 50); });
       });
-      maxLink.href = state.config.max_chat_url || LINKS.maxChat;
+      maxLink.href = LINKS.maxChat;
 
       function showMenu() {
         menu.hidden = false;
