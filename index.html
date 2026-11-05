@@ -2090,7 +2090,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-df994e90";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-c0dde831";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -2808,7 +2808,7 @@
       current: '',
       directions: null,
       directionsTitle: '',
-      helpVideoUrl: '',
+      helpVideoUrl: 'https://app.yrekrut.ru/media/ai-assistant.mp4',
       filters: { citizen: 'all', hep: false, hiv: false },
       apps: null,
       appsTab: 'active',
@@ -2989,6 +2989,7 @@
       if (!key) return;
       var data = readJson(key);
       if (data) CACHED.forEach(function (k) { if (data[k] != null) state[k] = data[k]; });
+      if (!state.helpVideoUrl) state.helpVideoUrl = 'https://app.yrekrut.ru/media/ai-assistant.mp4';
     }
 
     function dropSession() {
@@ -3028,7 +3029,7 @@
           remember({
             directions: result.directions.items,
             directionsTitle: result.directions.directionsTitle,
-            helpVideoUrl: result.directions.helpVideoUrl,
+            helpVideoUrl: result.directions.helpVideoUrl || 'https://app.yrekrut.ru/media/ai-assistant.mp4',
             apps: result.apps,
             profile: result.profile,
             questions: result.questions
