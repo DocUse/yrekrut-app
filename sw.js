@@ -1,5 +1,5 @@
 // Build id is substituted by tools/build-app.mjs; a new id means a new cache and an update prompt.
-var CACHE = 'yarekrut-20261105-fcc09320';
+var CACHE = 'yarekrut-20261105-eff3250e';
 var SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png', './icons/hunter.png'];
 var FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 

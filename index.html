@@ -1785,7 +1785,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-fcc09320";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-eff3250e";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -3061,7 +3061,7 @@
         : 'Код отправлен на ' + data.email + '. Если письма нет, проверьте «Спам».';
       input.value = '';
       input.maxLength = test ? 4 : 7;
-      input.placeholder = test ? '1243' : '000000';
+      input.placeholder = test ? '****' : '000000';
       if (resend) resend.hidden = test;
       if (test) clearInterval(resendTimer);
       else tickResend(purpose);
