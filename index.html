@@ -1785,7 +1785,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261104-c01f7257";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-fcc09320";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -1945,8 +1945,8 @@
         <p class="reg-sub">Код придёт на почту</p>
         <div class="fields">
           <div class="field">
-            <label for="login-email">ПОЧТА</label>
-            <input id="login-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@mail.com" maxlength="254">
+            <label for="login-email">ПОЧТА ИЛИ ТЕЛЕФОН</label>
+            <input id="login-email" name="login" type="text" autocomplete="username" inputmode="text" placeholder="name@mail.com или телефон" maxlength="254">
           </div>
           <p class="form-error" role="alert" hidden></p>
           <button class="btn btn-register btn-enter" type="submit">Войти</button>
@@ -3053,9 +3053,18 @@
       var data = pending(purpose);
       if (!data) return go(purpose === 'register' ? '#/register' : '#/login', true);
       var screen = screenEl(purpose + '-code');
-      $('[data-code-sent]', screen).textContent = 'Код отправлен на ' + data.email + '. Если письма нет, проверьте «Спам».';
-      $('input', screen).value = '';
-      tickResend(purpose);
+      var test = purpose === 'login' && String(data.email).replace(/\D/g, '') === '89000000000';
+      var input = $('input', screen);
+      var resend = $('[data-resend]', screen);
+      $('[data-code-sent]', screen).textContent = test
+        ? 'Введите технический код доступа.'
+        : 'Код отправлен на ' + data.email + '. Если письма нет, проверьте «Спам».';
+      input.value = '';
+      input.maxLength = test ? 4 : 7;
+      input.placeholder = test ? '1243' : '000000';
+      if (resend) resend.hidden = test;
+      if (test) clearInterval(resendTimer);
+      else tickResend(purpose);
     }
 
     function bindAuth() {
@@ -3111,7 +3120,8 @@
         var form = event.currentTarget;
         var err = $('.form-error', form);
         var email = $('#login-email').value.trim().toLowerCase();
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError(err, 'Проверьте почту');
+        var testPhone = email.replace(/\D/g, '') === '89000000000';
+        if (!testPhone && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError(err, 'Проверьте почту или телефон');
         showError(err, '');
         var waiting = pending('login');
         busy($('button[type=submit]', form), api('sendLoginCode', [email]), 'Отправляем…')
@@ -3133,14 +3143,18 @@
         var input = $('input', form);
         var err = $('.form-error', form);
         input.addEventListener('input', function () {
-          if (input.value.replace(/\D/g, '').length === 6 && !$('button[type=submit]', form).disabled) $('button[type=submit]', form).click();
+          var current = pending(purpose);
+          var need = current && String(current.email).replace(/\D/g, '') === '89000000000' ? 4 : 6;
+          if (input.value.replace(/\D/g, '').length === need && !$('button[type=submit]', form).disabled) $('button[type=submit]', form).click();
         });
         form.addEventListener('submit', function (event) {
           event.preventDefault();
           var data = pending(purpose);
           if (!data) return go(purpose === 'register' ? '#/register' : '#/login', true);
           var code = input.value.replace(/\D/g, '');
-          if (code.length !== 6) return showError(err, 'Введите шесть цифр из письма');
+          var test = purpose === 'login' && String(data.email).replace(/\D/g, '') === '89000000000';
+          var need = test ? 4 : 6;
+          if (code.length !== need) return showError(err, test ? 'Введите технический код' : 'Введите шесть цифр из письма');
           showError(err, '');
           busy($('button[type=submit]', form), api(purpose === 'register' ? 'confirmRegister' : 'confirmLogin', [data.email, code]), 'Проверяем…')
             .then(function (result) {
