@@ -1774,6 +1774,282 @@
       font-family: "Manrope", sans-serif; font-weight: 500; font-size: 14px;
     }
     .update-bar button { border: 0; border-radius: 10px; padding: 8px 12px; background: #ffffff; color: #243028; font-family: inherit; font-weight: 700; cursor: pointer; }
+
+    /* Profile: training card, channels, logout */
+    .training-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      min-height: 120px;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 16px;
+      background: #203026 url("./icons/training-card.png") center / cover no-repeat;
+      color: #ffffff;
+      text-decoration: none;
+    }
+    .training-card b {
+      width: 174px;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+    }
+    .training-card span {
+      width: 161px;
+      color: rgba(255, 255, 255, 0.88);
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 16px;
+    }
+    .screen-profile .channel {
+      min-height: 52px;
+      margin-top: 8px;
+      padding: 12px 14px;
+      gap: 12px;
+    }
+    .screen-profile .channel .tg,
+    .screen-profile .channel .mx {
+      width: 28px;
+      height: 28px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .screen-profile .channel .tg svg { width: 18px; height: 18px; }
+    .screen-profile .channel .mx { display: flex; align-items: center; justify-content: center; background: #ffffff; }
+    .screen-profile .channel .mx svg { width: 28px; height: 28px; }
+    .profile-logout {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      border: 0;
+      background: transparent;
+      color: #2C5C38;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 20px;
+      cursor: pointer;
+    }
+
+    /* Quick actions: floating plus, menu and MAX notice */
+    .quick {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      z-index: 60;
+      display: none;
+      width: 100%;
+      max-width: 390px;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    html.is-list .quick,
+    html.is-detail .quick,
+    html.is-profile .quick { display: block; }
+    .quick-dim {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      background: rgba(17, 17, 17, 0.32);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+    .quick.is-open .quick-dim { opacity: 1; visibility: visible; pointer-events: auto; }
+    .quick-panel {
+      position: absolute;
+      right: 24px;
+      bottom: calc(64px + env(safe-area-inset-bottom) + 8px + 56px + 12px);
+      width: 280px;
+      max-width: calc(100% - 48px);
+      padding: 12px;
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 16px 40px rgba(17, 17, 17, 0.18), 0 2px 8px rgba(17, 17, 17, 0.06);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.97);
+      transform-origin: bottom right;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    .quick.is-open .quick-panel {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    html.is-detail .quick-panel { bottom: calc(24px + env(safe-area-inset-bottom) + 56px + 12px); }
+    .quick-menu { display: flex; flex-direction: column; gap: 8px; }
+    .quick-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 52px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 12px;
+      background: #F4F4F6;
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 20px;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .quick-item-main { background: #EAF2EA; font-weight: 700; }
+    .quick-panel:focus { outline: none; }
+    .quick-item:focus,
+    .quick-notice-go:focus,
+    .quick-notice-back:focus { outline: none; }
+    .quick-item:focus-visible,
+    .quick-notice-go:focus-visible,
+    .quick-notice-back:focus-visible,
+    .fab:focus-visible {
+      outline: 2px solid #2C5C38;
+      outline-offset: 2px;
+    }
+    .quick-ico {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      background: #ffffff;
+    }
+    .quick-ico svg { display: block; }
+    .quick-ico-plus svg { width: 18px; height: 18px; }
+    .quick-ico-tg svg, .quick-ico-max svg { width: 24px; height: 24px; }
+    .quick-label { min-width: 0; }
+    .quick-notice { padding: 4px 4px 2px; }
+    .quick-notice-head { display: flex; align-items: center; gap: 8px; }
+    .quick-notice-ico {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 14px;
+      background: #FDF2E3;
+      color: #B26A00;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .quick-notice b {
+      color: #111111;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+    }
+    .quick-notice p {
+      margin: 10px 0 0;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 18px;
+    }
+    .quick-notice-go {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      margin-top: 14px;
+      border-radius: 14px;
+      background: #2C5C38;
+      color: #ffffff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 20px;
+      text-decoration: none;
+    }
+    .quick-notice-back {
+      width: 100%;
+      height: 40px;
+      margin-top: 4px;
+      border: 0;
+      background: transparent;
+      color: #636366;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 18px;
+      cursor: pointer;
+    }
+    .fab {
+      position: absolute;
+      right: 24px;
+      bottom: calc(64px + env(safe-area-inset-bottom) + 8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border: 0;
+      border-radius: 28px;
+      background: #2C5C38;
+      color: #ffffff;
+      box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      pointer-events: auto;
+      isolation: isolate;
+    }
+    html.is-detail .fab { bottom: calc(24px + env(safe-area-inset-bottom)); }
+    .fab::before,
+    .fab::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background: #2C5C38;
+      opacity: 0;
+      animation: fab-wave 3.2s ease-out infinite;
+    }
+    .fab::after { animation-delay: 1.6s; }
+    .fab-plus {
+      display: flex;
+      transition: transform 200ms ease;
+      animation: fab-shake 5s ease-in-out infinite;
+    }
+    .quick.is-open .fab-plus { transform: rotate(45deg); animation: none; }
+    .quick.is-open .fab::before,
+    .quick.is-open .fab::after { animation: none; opacity: 0; }
+    @keyframes fab-wave {
+      0% { transform: scale(1); opacity: 0.35; }
+      70% { transform: scale(1.9); opacity: 0; }
+      100% { transform: scale(1.9); opacity: 0; }
+    }
+    @keyframes fab-shake {
+      0%, 86%, 100% { transform: rotate(0deg); }
+      88% { transform: rotate(-7deg); }
+      90% { transform: rotate(7deg); }
+      92% { transform: rotate(-5deg); }
+      94% { transform: rotate(4deg); }
+      96% { transform: rotate(-2deg); }
+      98% { transform: rotate(0deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fab-plus, .fab::before, .fab::after { animation: none; }
+      .quick-panel, .quick-dim { transition: none; }
+    }
+    html.is-detail .screen-detail {
+      padding-bottom: max(100px, calc(76px + env(safe-area-inset-bottom)));
+    }
   </style>
 
   <meta name="theme-color" content="#ffffff">
@@ -1785,7 +2061,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-eff3250e";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-919fd5ad";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -1918,12 +2194,12 @@
           <div class="check">
             <input id="policy" name="policy" type="checkbox">
             <label class="box" for="policy"></label>
-            <span class="check-text">Согласен с <a id="policy-link" href="https://za-edinstvo.ru/politika-konfidencialnosti/" target="_blank" rel="noopener">политикой обработки ПД</a></span>
+            <span class="check-text">Согласен с <a id="policy-link" href="https://yrekrut.ru/politika-konfidencialnosti/" target="_blank" rel="noopener">политикой обработки ПД</a></span>
           </div>
           <div class="check">
             <input id="offer" name="offer" type="checkbox">
             <label class="box" for="offer"></label>
-            <span class="check-text">Согласен с условиями <a id="offer-link" href="https://za-edinstvo.ru/polzovatelskoe-soglashenie/" target="_blank" rel="noopener">оферты</a></span>
+            <span class="check-text">Согласен с условиями <a id="offer-link" href="https://yrekrut.ru/polzovatelskoe-soglashenie/" target="_blank" rel="noopener">оферты</a></span>
           </div>
           <p class="form-error" role="alert" hidden></p>
           <button class="btn btn-register btn-submit" type="submit">Зарегистрироваться</button>
@@ -2406,6 +2682,45 @@
     <span>Доступна новая версия кабинета</span>
     <button type="button" id="update-go">Обновить</button>
   </div>
+  <div class="quick" id="quick">
+    <button class="quick-dim" type="button" data-quick-close aria-label="Закрыть меню"></button>
+    <div class="quick-panel" id="quick-panel" role="dialog" aria-modal="true" aria-label="Быстрые действия" tabindex="-1">
+      <div class="quick-menu" id="quick-menu">
+        <a class="quick-item quick-item-main" href="https://t.me/rekrut_hunter" target="_blank" rel="noopener" data-quick-hunter>
+          <span class="quick-ico quick-ico-plus" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.75 9H14.25M9 3.75V14.25" stroke="#2C5C38" stroke-width="2" stroke-linecap="round"/></svg>
+          </span>
+          <span class="quick-label">Добавить кандидата</span>
+        </a>
+        <a class="quick-item" href="https://t.me/rekrut_hunter" target="_blank" rel="noopener" data-quick-hunter>
+          <span class="quick-ico" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#229ED9"/><path d="M5.15 11.49L18.08 6.5C18.68 6.28 19.17 6.64 18.97 7.55L16.77 17.94C16.61 18.68 16.17 18.86 15.56 18.51L12.21 16.04L10.59 17.6C10.41 17.78 10.26 17.93 9.91 17.93L10.15 14.51L16.38 8.88C16.65 8.64 16.32 8.5 15.96 8.74L8.26 13.59L4.94 12.55C4.22 12.32 4.21 11.83 5.15 11.49Z" fill="white"/></svg>
+          </span>
+          <span class="quick-label">Задать вопрос</span>
+        </a>
+        <button class="quick-item" type="button" data-quick-max>
+          <span class="quick-ico" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 1H9C4.58172 1 1 4.58172 1 9V15C1 19.4183 4.58172 23 9 23H15C19.4183 23 23 19.4183 23 15V9C23 4.58172 19.4183 1 15 1Z" fill="url(#quick-max-grad)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4.5C16.2 4.5 19.5 7.55 19.5 11.65C19.5 15.75 16.3 18.85 12.15 18.85C10.78 18.85 9.55 18.52 8.5 17.97L5.03 19.12C4.66 19.24 4.39 18.96 4.51 18.58L5.57 15.15C4.86 14.08 4.5 12.89 4.5 11.65C4.5 7.55 7.8 4.5 12 4.5ZM12 7.45C9.4 7.45 7.45 9.23 7.45 11.65C7.45 14.12 9.4 15.9 12 15.9C14.6 15.9 16.55 14.12 16.55 11.65C16.55 9.23 14.6 7.45 12 7.45Z" fill="white"/><defs><linearGradient id="quick-max-grad" x1="3" y1="3" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#168BFF"/><stop offset="0.52" stop-color="#4265F6"/><stop offset="1" stop-color="#8150EB"/></linearGradient></defs></svg>
+          </span>
+          <span class="quick-label">Задать вопрос</span>
+        </button>
+      </div>
+      <div class="quick-notice" id="quick-notice" hidden>
+        <div class="quick-notice-head">
+          <span class="quick-notice-ico" aria-hidden="true">!</span>
+          <b id="quick-title">Важно</b>
+        </div>
+        <p>В связи с удалением MAX из App Store в России push-уведомления не работают, поэтому время ответа увеличено.</p>
+        <a class="quick-notice-go" href="https://max.ru/u/f9LHodD0cOJCZR0McV7Jx5h3b6WL15DwyQjL7CHUQMZbvvqAfjYeXVx3_w4" target="_blank" rel="noopener" data-quick-max-go>Перейти в MAX</a>
+        <button class="quick-notice-back" type="button" data-quick-back>Назад</button>
+      </div>
+    </div>
+    <button class="fab" id="fab" type="button" aria-label="Быстрые действия" aria-expanded="false" aria-controls="quick-panel">
+      <span class="fab-plus" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12H19M12 5V19" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg>
+      </span>
+    </button>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
     <script>
@@ -2435,9 +2750,26 @@
       user: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 12.1998C13.7681 12.1998 15.2008 10.7671 15.2008 8.9998C15.2008 7.23249 13.7681 5.7998 12.0008 5.7998C10.2335 5.7998 8.80078 7.23249 8.80078 8.9998C8.80078 10.7671 10.2335 12.1998 12.0008 12.1998Z" stroke="currentColor" stroke-width="1.7"/><path d="M6.19922 18.7998C7.09922 16.1998 9.19922 14.7998 11.9992 14.7998C14.7992 14.7998 16.8992 16.1998 17.7992 18.7998" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
       help: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.0008 19.1998C15.9772 19.1998 19.2008 15.9763 19.2008 11.9998C19.2008 8.02335 15.9772 4.7998 12.0008 4.7998C8.02433 4.7998 4.80078 8.02335 4.80078 11.9998C4.80078 15.9763 8.02433 19.1998 12.0008 19.1998Z" stroke="currentColor" stroke-width="1.7"/><path d="M12.0008 16.2002V16.0002M12.0008 8.2002C10.7008 8.2002 9.80078 9.0002 9.80078 10.0002" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
       chevron: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3.5L10.5 8L6 12.5" stroke="#111111" stroke-width="1.7" stroke-linecap="round"/></svg>',
-      telegram: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M15.5 3.2L2.8 8.1c-.9.3-.9 1.5.1 1.8l3.3.9 1.3 3.9c.3.8 1.3.9 1.8.2l1.8-2.4 3.4 2.5c.7.5 1.7.1 1.9-.7l2.2-9.4c.2-.9-.7-1.7-1.6-1.4L15.5 3.2Z" fill="white"/></svg>'
+      telegram: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M15.5 3.2L2.8 8.1c-.9.3-.9 1.5.1 1.8l3.3.9 1.3 3.9c.3.8 1.3.9 1.8.2l1.8-2.4 3.4 2.5c.7.5 1.7.1 1.9-.7l2.2-9.4c.2-.9-.7-1.7-1.6-1.4L15.5 3.2Z" fill="white"/></svg>',
+      max: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 1H9C4.58172 1 1 4.58172 1 9V15C1 19.4183 4.58172 23 9 23H15C19.4183 23 23 19.4183 23 15V9C23 4.58172 19.4183 1 15 1Z" fill="url(#max-grad)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4.5C16.2 4.5 19.5 7.55 19.5 11.65C19.5 15.75 16.3 18.85 12.15 18.85C10.78 18.85 9.55 18.52 8.5 17.97L5.03 19.12C4.66 19.24 4.39 18.96 4.51 18.58L5.57 15.15C4.86 14.08 4.5 12.89 4.5 11.65C4.5 7.55 7.8 4.5 12 4.5ZM12 7.45C9.4 7.45 7.45 9.23 7.45 11.65C7.45 14.12 9.4 15.9 12 15.9C14.6 15.9 16.55 14.12 16.55 11.65C16.55 9.23 14.6 7.45 12 7.45Z" fill="white"/><defs><linearGradient id="max-grad" x1="3" y1="3" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#168BFF"/><stop offset="0.52" stop-color="#4265F6"/><stop offset="1" stop-color="#8150EB"/></linearGradient></defs></svg>'
     };
-    var TABS = [['vacancies', 'Направления', 'home'], ['requests', 'Заявки', 'doc'], ['profile', 'Профиль', 'user'], ['help', 'Вопросы', 'help']];
+    var TABS = [['vacancies', 'Направления', 'home'], ['profile', 'Профиль', 'user'], ['help', 'Вопросы', 'help']];
+    var LEGAL = {
+      policy: 'https://yrekrut.ru/politika-konfidencialnosti/',
+      offer: 'https://yrekrut.ru/polzovatelskoe-soglashenie/'
+    };
+    var LINKS = {
+      training: 'https://yrekrut.ru/obuchenie/',
+      telegram: 'https://telegram.org/',
+      max: 'https://max.ru/',
+      hunter: 'https://t.me/rekrut_hunter',
+      maxChat: 'https://max.ru/u/f9LHodD0cOJCZR0McV7Jx5h3b6WL15DwyQjL7CHUQMZbvvqAfjYeXVx3_w4'
+    };
+    // The old brand's legal URLs may still come from a cached server config.
+    function legalUrl(value, fallback) {
+      if (!value) return fallback;
+      return String(value).replace(/^https?:\/\/(?:www\.)?za-edinstvo\.ru\//, 'https://yrekrut.ru/');
+    }
 
     var state = {
       config: readJson(KEYS.config) || {},
@@ -2925,12 +3257,16 @@
       else location.hash = hash;
     }
 
+    var HIDDEN_ROUTES = { requests: 1, request: 1, apply: 1, withdraw: 1, acts: 1, partner: 1 };
+
     function route() {
       flushDraft(false);
       var parts = location.hash.replace(/^#\/?/, '').split('/').map(function (part) {
         try { return decodeURIComponent(part); } catch (error) { return part; }
       });
       var name = parts[0] || '';
+      // Applications moved to messengers: keep the old screens in the bundle, but never show them.
+      if (HIDDEN_ROUTES[name]) return go(homeHash(), true);
       var params = parts.slice(1).filter(function (p) { return p !== ''; });
       var spec = Object.prototype.hasOwnProperty.call(ROUTES, name) ? ROUTES[name] : null;
       var current = session();
@@ -2976,8 +3312,10 @@
     }
 
     function applyLegalLinks() {
-      if (state.config.policy_url) $('#policy-link').href = state.config.policy_url;
-      if (state.config.offer_url) $('#offer-link').href = state.config.offer_url;
+      var policy = $('#policy-link');
+      var offer = $('#offer-link');
+      if (policy) policy.href = legalUrl(state.config.policy_url, LEGAL.policy);
+      if (offer) offer.href = legalUrl(state.config.offer_url, LEGAL.offer);
     }
 
     function paintStart() {
@@ -3307,11 +3645,15 @@
           addLink.classList.add('is-disabled');
           addLink.setAttribute('aria-disabled', 'true');
           addLink.removeAttribute('href');
+          addLink.removeAttribute('target');
+          addLink.removeAttribute('rel');
           addLink.textContent = item.statusLabel || 'Временно стоп';
         } else {
           addLink.classList.remove('is-disabled');
           addLink.removeAttribute('aria-disabled');
-          addLink.setAttribute('href', '#');
+          addLink.setAttribute('href', LINKS.hunter);
+          addLink.setAttribute('target', '_blank');
+          addLink.setAttribute('rel', 'noopener');
           addLink.textContent = 'Добавить кандидата';
         }
       }
@@ -3748,10 +4090,6 @@
       document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'hidden') flushDraft(true);
       });
-      $('#dir-add').addEventListener('click', function (event) {
-        event.preventDefault();
-        startDraft();
-      });
       $('#dir-player').addEventListener('click', function () {
         if (state.helpVideoUrl) window.open(state.helpVideoUrl, '_blank', 'noopener');
       });
@@ -3991,46 +4329,25 @@
     }
 
     function paintProfile(p) {
-      var config = state.config;
-      var openAct = p.acts.filter(function (a) { return a.status !== 'paid'; })[0];
-      var req = p.requisites;
       var nodes = [
         h('h1', { class: 'list-title', id: 'profile-name', text: p.profile.fio }),
-        h('p', { class: 'phone', id: 'profile-phone', text: p.profile.phone }),
-        h('section', { class: 'balance' }, [h('span', { text: 'Можно вывести' }), h('strong', { text: money(p.sums.available) }), h('span', { text: 'В резерве: ' + money(p.sums.reserve) })]),
-        h('div', { class: 'profile-actions' }, [
-          h('a', { class: 'money-btn', href: '#/withdraw' }, [h('b', { text: 'Вывести' }), h('span', { text: money(p.sums.available) })]),
-          h('a', { class: 'acts-btn', href: '#/acts' }, [h('b', { text: 'Мои акты' }), h('span', { text: openAct ? ACT_STATUS[openAct.status] : 'История выплат' })])
+        h('a', { class: 'training-card', href: LINKS.training, target: '_blank', rel: 'noopener' }, [
+          h('b', { text: 'Обучение рекрутингу' }),
+          h('span', { text: 'Раскачай поиск с нуля до первого подписания' })
         ]),
-        h('section', { class: 'bank' }, [
-          h('div', { class: 'bank-name', text: req.typeLabel || 'Реквизиты не указаны' }),
-          req.text ? h('div', { class: 'bank-row' }, [h('span', { text: 'Реквизиты' }), h('b', { text: req.text.split('\n')[0] })]) : null,
-          h('p', { class: 'bank-note', text: 'Для изменения реквизитов обратитесь к Хантеру' })
+        h('p', { class: 'channels-label', text: 'НАШИ КАНАЛЫ' }),
+        h('a', { class: 'channel', href: LINKS.telegram, target: '_blank', rel: 'noopener' }, [
+          h('span', { class: 'tg', 'aria-hidden': 'true', html: ICONS.telegram }),
+          h('b', { text: 'Telegram' }),
+          h('span', { class: 'v-go', 'aria-hidden': 'true', html: ICONS.chevron })
         ]),
-        h('section', { class: 'bank' }, [
-          h('div', { class: 'bank-name', text: 'Заявки' }),
-          h('div', { class: 'bank-row' }, [h('span', { text: 'Всего' }), h('b', { text: String(p.stats.total) })]),
-          h('div', { class: 'bank-row' }, [h('span', { text: 'Принято' }), h('b', { text: String(p.stats.accepted) })]),
-          h('div', { class: 'bank-row' }, [h('span', { text: 'В работе' }), h('b', { text: String(p.stats.inWork) })])
-        ])
+        h('a', { class: 'channel', href: LINKS.max, target: '_blank', rel: 'noopener' }, [
+          h('span', { class: 'mx', 'aria-hidden': 'true', html: ICONS.max }),
+          h('b', { text: 'MAX' }),
+          h('span', { class: 'v-go', 'aria-hidden': 'true', html: ICONS.chevron })
+        ]),
+        h('button', { class: 'profile-logout', type: 'button', text: 'Выйти', onclick: logout })
       ];
-      if (config.hunter_url) {
-        nodes.push(h('a', { class: 'hunter', href: config.hunter_url, target: '_blank', rel: 'noopener' }, [
-          h('img', { alt: '', src: './icons/hunter.png' }),
-          h('span', {}, [h('b', { text: 'Чат с Хантером' }), h('span', { text: 'Задайте вопрос' })])
-        ]));
-      }
-      nodes.push(channel('Партнёрская программа', '#/partner', (config.partner_percent || 3) + '% с агентского приглашённых'));
-      if (config.offer_url) nodes.push(channel('Оферта', config.offer_url));
-      if (config.policy_url) nodes.push(channel('Политика обработки ПД', config.policy_url));
-      var channels = [['Telegram', config.telegram_url], ['Max', config.max_url]].filter(function (c) { return c[1]; });
-      if (channels.length) {
-        nodes.push(h('p', { class: 'channels-label', text: 'НАШИ КАНАЛЫ' }));
-        channels.forEach(function (c) {
-          nodes.push(h('a', { class: 'channel', href: c[1], target: '_blank', rel: 'noopener' }, [h('span', { class: 'tg', 'aria-hidden': 'true', html: ICONS.telegram }), h('b', { text: c[0] })]));
-        });
-      }
-      nodes.push(h('button', { class: 'channel channel-btn', type: 'button', onclick: logout }, [h('b', { text: 'Выйти' })]));
       fill($('#profile-body'), nodes);
     }
 
@@ -4173,6 +4490,62 @@
           setState(name + '-state');
           PROFILE_PAINTERS[name](state.profile);
         };
+      });
+    }
+
+    function bindQuick() {
+      var root = $('#quick');
+      if (!root) return;
+      var fab = $('#fab');
+      var panel = $('#quick-panel');
+      var menu = $('#quick-menu');
+      var notice = $('#quick-notice');
+      var maxButton = $('[data-quick-max]', root);
+      var maxLink = $('[data-quick-max-go]', root);
+      var back = $('[data-quick-back]', root);
+      var hunter = state.config.hunter_url || LINKS.hunter;
+      $all('[data-quick-hunter]', root).forEach(function (link) {
+        link.href = hunter;
+        link.addEventListener('click', function () { setTimeout(close, 50); });
+      });
+      maxLink.href = state.config.max_chat_url || LINKS.maxChat;
+
+      function showMenu() {
+        menu.hidden = false;
+        notice.hidden = true;
+      }
+
+      function showNotice() {
+        menu.hidden = true;
+        notice.hidden = false;
+        panel.focus();
+      }
+
+      function open() {
+        showMenu();
+        root.classList.add('is-open');
+        fab.setAttribute('aria-expanded', 'true');
+        setTimeout(function () { panel.focus(); }, 160);
+      }
+
+      function close() {
+        root.classList.remove('is-open');
+        fab.setAttribute('aria-expanded', 'false');
+        if (document.activeElement && root.contains(document.activeElement)) fab.focus();
+      }
+
+      fab.addEventListener('click', function () {
+        if (root.classList.contains('is-open')) close();
+        else open();
+      });
+      root.addEventListener('click', function (event) {
+        if (event.target.closest('[data-quick-close]')) close();
+      });
+      maxButton.addEventListener('click', showNotice);
+      back.addEventListener('click', showMenu);
+      maxLink.addEventListener('click', function () { setTimeout(close, 50); });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && root.classList.contains('is-open')) close();
       });
     }
   </script>
@@ -4510,6 +4883,7 @@
       paintTabbars();
       bindAuth();
       bindRecruiter();
+      bindQuick();
       bindAdmin();
       $('#viewer-close').addEventListener('click', closeViewer);
       document.addEventListener('keydown', function (event) {
