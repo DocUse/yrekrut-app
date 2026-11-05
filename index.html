@@ -921,15 +921,38 @@
       text-decoration: none;
     }
     .player {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 148px;
+      padding: 0;
       border: 0;
       border-radius: 12px;
-      background: #F4F4F6;
+      background: #0B0B0C;
       width: 100%;
+      overflow: hidden;
       cursor: pointer;
+    }
+    .player-cover {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .player-play {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
+      transition: transform 0.18s ease;
+    }
+    .player:active .player-play {
+      transform: scale(0.94);
     }
     .fact {
       display: flex;
@@ -2067,7 +2090,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-97dd95f6";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-df994e90";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -2325,7 +2348,10 @@
     </article>
     <section class="video-card" data-dir-part>
       <button class="player" type="button" id="dir-player" aria-label="Как спросить голосового ассистента">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#2C5C38"/><path d="M20 16.5L33 24L20 31.5V16.5Z" fill="white"/></svg>
+        <img class="player-cover" src="https://app.yrekrut.ru/media/ai-assistant-cover.jpg" alt="" onerror="this.style.display='none'">
+        <span class="player-play" aria-hidden="true">
+          <svg width="52" height="52" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="26" fill="#2C5C38"/><path d="M21.5 17.5L36 26L21.5 34.5V17.5Z" fill="white"/></svg>
+        </span>
       </button>
       <h2>Как спросить голосового ассистента</h2>
       <p id="dir-video"></p>
@@ -3541,7 +3567,7 @@
     var STEP_OF_FILE = { passport: 'passport', snils: 'docs', inn: 'docs', migration: 'docs', translation: 'docs' };
 
     function rememberDirections(result) {
-      remember({ directions: result.items || [], directionsTitle: result.directionsTitle || '', helpVideoUrl: result.helpVideoUrl || '' });
+      remember({ directions: result.items || [], directionsTitle: result.directionsTitle || '', helpVideoUrl: result.helpVideoUrl || 'https://app.yrekrut.ru/media/ai-assistant.mp4' });
     }
 
     function findDirection(gid) {
@@ -3672,7 +3698,7 @@
       $('#dir-address-title').textContent = item.addressTitle || 'Адрес офиса';
       $('#dir-address').textContent = item.address;
       $('#dir-player').hidden = !state.helpVideoUrl;
-      $('#dir-video').textContent = 'Разрешите GPT доступ к Диску и скажите: таблица «' + (state.directionsTitle || 'Направления') + '», лист «' + item.sheetName + '».';
+      $('#dir-video').textContent = 'Скачайте таблицу в PDF и добавьте её в проект ChatGPT. Пошаговая инструкция — в видео.';
       $('#dir-sheet-note').textContent = 'Лист «' + item.sheetName + '». Откройте на телефоне — таблица останется в Google Диске.';
       $('#dir-sheet-link').href = item.url;
     }
