@@ -2061,7 +2061,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-919fd5ad";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261105-a2b70216";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -4546,6 +4546,9 @@
       maxLink.addEventListener('click', function () { setTimeout(close, 50); });
       document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape' && root.classList.contains('is-open')) close();
+      });
+      window.addEventListener('hashchange', function () {
+        if (root.classList.contains('is-open')) close();
       });
     }
   </script>
