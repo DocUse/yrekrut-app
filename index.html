@@ -1827,6 +1827,123 @@
       font-size: 12px;
       line-height: 16px;
     }
+
+    /* Training banner on the directions screen */
+    .training-banner {
+      position: relative;
+      margin-top: 12px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #203026 url("./icons/training-card.png") right center / cover no-repeat;
+      color: #ffffff;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+    .training-banner.is-visible { opacity: 1; transform: translateY(0); }
+    .training-banner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(32, 48, 38, 0.98) 0%, rgba(32, 48, 38, 0.93) 48%, rgba(32, 48, 38, 0.48) 100%);
+      pointer-events: none;
+    }
+    .training-banner-x {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.14);
+      cursor: pointer;
+    }
+    .training-banner-kicker,
+    .training-banner-title,
+    .training-banner-text,
+    .training-banner-actions { position: relative; z-index: 1; }
+    .training-banner-kicker {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.68);
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      line-height: 14px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .training-banner-title {
+      margin: 4px 0 0;
+      color: #ffffff;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+      letter-spacing: -0.2px;
+    }
+    .training-banner-text {
+      max-width: 230px;
+      margin: 6px 0 0;
+      color: rgba(255, 255, 255, 0.86);
+      font-family: "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 16px;
+    }
+    .training-banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .training-banner-go {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #2C5C38;
+      font-family: "Manrope", sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 18px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .training-banner-skip {
+      flex: 0 0 auto;
+      height: 42px;
+      padding: 0 11px;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      border-radius: 12px;
+      background: transparent;
+      color: #ffffff;
+      font-family: "Manrope", sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 16px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .training-banner-go:focus-visible,
+    .training-banner-skip:focus-visible,
+    .training-banner-x:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .training-banner { transition: none; }
+    }
     .screen-profile .channel {
       min-height: 52px;
       margin-top: 8px;
@@ -2090,7 +2207,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261106-4f1437e3";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261110-c66bc29e";</script>
 </head>
 <body>
     <main class="screen screen-start" data-screen="start">
@@ -2311,6 +2428,18 @@
     <main class="screen screen-list" data-screen="vacancies">
     <div class="list-scroll">
       <h1 class="list-title">Направления</h1>
+      <section class="training-banner" id="training-banner" aria-labelledby="training-banner-title" hidden>
+        <button class="training-banner-x" id="training-banner-x" type="button" aria-label="Скрыть баннер обучения">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 3L11 11M11 3L3 11" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <p class="training-banner-kicker">Обучение</p>
+        <h2 class="training-banner-title" id="training-banner-title">Обучение рекрутингу</h2>
+        <p class="training-banner-text">Как искать кандидатов и дойти до первого подписания</p>
+        <div class="training-banner-actions">
+          <a class="training-banner-go" id="training-banner-go" href="https://yrekrut.ru/obuchenie/" target="_blank" rel="noopener">Пройти обучение</a>
+          <button class="training-banner-skip" id="training-banner-skip" type="button">Я уже умею искать</button>
+        </div>
+      </section>
       <div class="chips" id="chips">
         <button class="chip is-on" type="button" data-filter="all" aria-pressed="true">Все</button>
         <button class="chip" type="button" data-filter="rf" aria-pressed="false">Граждане РФ</button>
@@ -2759,7 +2888,7 @@
     'use strict';
     var API_URL = window.YREKRUT_API || '';
     var BUILD = window.YREKRUT_BUILD || 'dev';
-    var KEYS = { session: 'yarekrut_session', pending: 'yarekrut_pending', ref: 'yarekrut_ref', config: 'yarekrut_config' };
+    var KEYS = { session: 'yarekrut_session', pending: 'yarekrut_pending', ref: 'yarekrut_ref', config: 'yarekrut_config', training: 'yarekrut_training_banner' };
     var STATUS = {
       draft: 'Черновик', processing: 'В обработке', rejected: 'Отклонена', accepted: 'Принята',
       departure: 'Выезд указан', photo_review: 'Фото на проверке', photo_rejected: 'Фото не принято',
@@ -2963,6 +3092,54 @@
       writeJson(KEYS.session, { token: token, role: role || 'recruiter' });
     }
 
+    var TRAINING_BANNER_VERSION_ = '1';
+    var TRAINING_BANNER_PAUSE_ = 12 * 60 * 60 * 1000;
+
+    function trainingBannerState() {
+      var data = readJson(KEYS.training);
+      if (!data || data.version !== TRAINING_BANNER_VERSION_) {
+        data = { version: TRAINING_BANNER_VERSION_, pending: true, lastShownAt: 0, hiddenUntil: 0, dismissedForever: false };
+      }
+      return data;
+    }
+
+    function saveTrainingBannerState(data) {
+      data.version = TRAINING_BANNER_VERSION_;
+      writeJson(KEYS.training, data);
+    }
+
+    function markTrainingBannerPending() {
+      var data = trainingBannerState();
+      data.pending = true;
+      saveTrainingBannerState(data);
+    }
+
+    function shouldShowTrainingBanner() {
+      var data = trainingBannerState();
+      if (data.dismissedForever) return false;
+      if (data.hiddenUntil && Date.now() < Number(data.hiddenUntil)) return false;
+      if (data.pending) return true;
+      return !data.lastShownAt || Date.now() - Number(data.lastShownAt) > TRAINING_BANNER_PAUSE_;
+    }
+
+    function markTrainingBannerShown() {
+      var data = trainingBannerState();
+      data.pending = false;
+      data.lastShownAt = Date.now();
+      saveTrainingBannerState(data);
+    }
+
+    function markTrainingBannerChoice(kind) {
+      var data = trainingBannerState();
+      var now = Date.now();
+      if (kind === 'course') data.hiddenUntil = now + 30 * 24 * 60 * 60 * 1000;
+      else if (kind === 'skip') data.dismissedForever = true;
+      else data.hiddenUntil = now + 7 * 24 * 60 * 60 * 1000;
+      data.pending = false;
+      if (!data.lastShownAt) data.lastShownAt = now;
+      saveTrainingBannerState(data);
+    }
+
     // Screen data lives in memory and in localStorage, so screens paint instantly and refresh quietly.
     var CACHED = ['directions', 'directionsTitle', 'helpVideoUrl', 'apps', 'profile', 'questions', 'adminRows', 'adminActs'];
     var persistTimer = 0;
@@ -3000,6 +3177,11 @@
       state.draft = null;
       state.dirty = false;
       state.queue = Promise.resolve();
+      var banner = document.getElementById('training-banner');
+      if (banner) {
+        banner.hidden = true;
+        banner.classList.remove('is-visible');
+      }
     }
 
     function sameData(a, b) {
@@ -3518,6 +3700,7 @@
               writeJson(KEYS.pending, null);
               if (purpose === 'register') writeJson(KEYS.ref, null);
               saveSession(result.token, result.role);
+              markTrainingBannerPending();
               bootstrap().catch(function () {});
               go(result.role === 'admin' ? '#/admin' : '#/vacancies', true);
             })
@@ -3616,6 +3799,43 @@
       if (!all.length) setState('direction-state', 'empty', 'Пока нет направлений');
       else if (!shown.length) setState('direction-state', 'empty', 'Под эти фильтры направлений нет');
       else setState('direction-state');
+      paintTrainingBanner();
+    }
+
+    function paintTrainingBanner() {
+      var banner = $('#training-banner');
+      if (!banner || !banner.hidden) return;
+      if (!shouldShowTrainingBanner()) return;
+      banner.hidden = false;
+      banner.classList.remove('is-visible');
+      void banner.offsetWidth;
+      requestAnimationFrame(function () { banner.classList.add('is-visible'); });
+      markTrainingBannerShown();
+    }
+
+    function hideTrainingBanner() {
+      var banner = $('#training-banner');
+      if (!banner) return;
+      banner.classList.remove('is-visible');
+      setTimeout(function () { banner.hidden = true; }, 180);
+    }
+
+    function bindTrainingBanner() {
+      var close = $('#training-banner-x');
+      var skip = $('#training-banner-skip');
+      var go = $('#training-banner-go');
+      if (close) close.addEventListener('click', function () {
+        markTrainingBannerChoice('later');
+        hideTrainingBanner();
+      });
+      if (skip) skip.addEventListener('click', function () {
+        markTrainingBannerChoice('skip');
+        hideTrainingBanner();
+      });
+      if (go) go.addEventListener('click', function () {
+        markTrainingBannerChoice('course');
+        hideTrainingBanner();
+      });
     }
 
     function loadDirections() {
@@ -4510,6 +4730,7 @@
           PROFILE_PAINTERS[name](state.profile);
         };
       });
+      bindTrainingBanner();
     }
 
     function bindQuick() {
