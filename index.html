@@ -7,6 +7,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Oswald:wght@700&display=swap" media="print" onload="this.media='all'">
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();
+      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=114160013', 'ym');
+    ym(114160013, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <!-- /Yandex.Metrika counter -->
     <style>
     * { box-sizing: border-box; }
     html, body {
@@ -2196,9 +2207,10 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
-  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261110-0baba80a";</script>
+  <script>window.YREKRUT_API = "https://script.google.com/macros/s/AKfycbyn3kSJyNMTOU2omyIcppRt2Xdh47JTjquzN18Pz5XsHGnkfp7bNAFjaMVgLZY5q5s/exec"; window.YREKRUT_BUILD = "20261110-6c67afef";</script>
 </head>
 <body>
+  <noscript><div><img src="https://mc.yandex.ru/watch/114160013" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <main class="screen screen-start" data-screen="start">
     <div class="spacer-top" aria-hidden="true"></div>
 
@@ -2329,12 +2341,12 @@
           <div class="check">
             <input id="policy" name="policy" type="checkbox">
             <label class="box" for="policy"></label>
-            <span class="check-text">Согласен с <a id="policy-link" href="https://yrekrut.ru/politika-konfidencialnosti/" target="_blank" rel="noopener">политикой обработки ПД</a></span>
+            <span class="check-text">Согласен с <a id="policy-link" href="https://yrekrut.ru/politika-konfidencialnosti/" target="_blank" rel="noopener" data-metrika="registration_policy">политикой обработки ПД</a></span>
           </div>
           <div class="check">
             <input id="offer" name="offer" type="checkbox">
             <label class="box" for="offer"></label>
-            <span class="check-text">Согласен с условиями <a id="offer-link" href="https://yrekrut.ru/polzovatelskoe-soglashenie/" target="_blank" rel="noopener">оферты</a></span>
+            <span class="check-text">Согласен с условиями <a id="offer-link" href="https://yrekrut.ru/polzovatelskoe-soglashenie/" target="_blank" rel="noopener" data-metrika="registration_offer">оферты</a></span>
           </div>
           <p class="form-error" role="alert" hidden></p>
           <button class="btn btn-register btn-submit" type="submit">Зарегистрироваться</button>
@@ -2418,14 +2430,14 @@
     <div class="list-scroll">
       <h1 class="list-title">Направления</h1>
       <section class="training-banner" id="training-banner" aria-labelledby="training-banner-title" hidden>
-        <button class="training-banner-x" id="training-banner-x" type="button" aria-label="Скрыть баннер обучения">
+        <button class="training-banner-x" id="training-banner-x" type="button" aria-label="Скрыть баннер обучения" data-metrika="training_banner_close">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 3L11 11M11 3L3 11" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/></svg>
         </button>
         <h2 class="training-banner-title" id="training-banner-title">Обучение рекрутингу</h2>
         <p class="training-banner-text">Раскачай поиск с нуля до первого подписания</p>
         <div class="training-banner-actions">
-          <a class="training-banner-go" id="training-banner-go" href="https://yrekrut.ru/obuchenie/" target="_blank" rel="noopener">Пройти обучение</a>
-          <button class="training-banner-skip" id="training-banner-skip" type="button">Я уже умею искать</button>
+          <a class="training-banner-go" id="training-banner-go" href="https://yrekrut.ru/obuchenie/" target="_blank" rel="noopener" data-metrika="training_banner_open">Пройти обучение</a>
+          <button class="training-banner-skip" id="training-banner-skip" type="button" data-metrika="training_banner_skip">Я уже умею искать</button>
         </div>
       </section>
       <div class="chips" id="chips">
@@ -2478,7 +2490,7 @@
       <p id="dir-sheet-note"></p>
       <a class="sheet-link" id="dir-sheet-link" href="#" target="_blank" rel="noopener">Открыть Google Sheets</a>
     </section>
-    <a class="btn btn-register detail-add" id="dir-add" href="#" data-dir-part>Добавить кандидата</a>
+    <a class="btn btn-register detail-add" id="dir-add" href="#" data-dir-part data-metrika="direction_add_candidate">Добавить кандидата</a>
   </main>
 
     <main class="screen screen-apply" data-screen="apply">
@@ -2835,19 +2847,19 @@
     <button class="quick-dim" type="button" data-quick-close aria-label="Закрыть меню"></button>
     <div class="quick-panel" id="quick-panel" role="dialog" aria-modal="true" aria-label="Быстрые действия" tabindex="-1">
       <div class="quick-menu" id="quick-menu">
-        <a class="quick-item quick-item-main" href="https://t.me/rekrut_hunter" target="_blank" rel="noopener" data-quick-hunter>
+        <a class="quick-item quick-item-main" href="https://t.me/rekrut_hunter" target="_blank" rel="noopener" data-quick-hunter data-metrika="quick_add_candidate">
           <span class="quick-ico quick-ico-plus" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.75 9H14.25M9 3.75V14.25" stroke="#2C5C38" stroke-width="2" stroke-linecap="round"/></svg>
           </span>
           <span class="quick-label">Добавить кандидата</span>
         </a>
-        <a class="quick-item" href="https://t.me/rekrut_hunter" target="_blank" rel="noopener" data-quick-hunter>
+        <a class="quick-item" href="https://t.me/rekrut_hunter" target="_blank" rel="noopener" data-quick-hunter data-metrika="quick_question_telegram">
           <span class="quick-ico" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#229ED9"/><path d="M5.15 11.49L18.08 6.5C18.68 6.28 19.17 6.64 18.97 7.55L16.77 17.94C16.61 18.68 16.17 18.86 15.56 18.51L12.21 16.04L10.59 17.6C10.41 17.78 10.26 17.93 9.91 17.93L10.15 14.51L16.38 8.88C16.65 8.64 16.32 8.5 15.96 8.74L8.26 13.59L4.94 12.55C4.22 12.32 4.21 11.83 5.15 11.49Z" fill="white"/></svg>
           </span>
           <span class="quick-label">Задать вопрос</span>
         </a>
-        <button class="quick-item" type="button" data-quick-max>
+        <button class="quick-item" type="button" data-quick-max data-metrika="quick_question_max">
           <span class="quick-ico" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 1H9C4.58172 1 1 4.58172 1 9V15C1 19.4183 4.58172 23 9 23H15C19.4183 23 23 19.4183 23 15V9C23 4.58172 19.4183 1 15 1Z" fill="url(#quick-max-grad)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4.5C16.2 4.5 19.5 7.55 19.5 11.65C19.5 15.75 16.3 18.85 12.15 18.85C10.78 18.85 9.55 18.52 8.5 17.97L5.03 19.12C4.66 19.24 4.39 18.96 4.51 18.58L5.57 15.15C4.86 14.08 4.5 12.89 4.5 11.65C4.5 7.55 7.8 4.5 12 4.5ZM12 7.45C9.4 7.45 7.45 9.23 7.45 11.65C7.45 14.12 9.4 15.9 12 15.9C14.6 15.9 16.55 14.12 16.55 11.65C16.55 9.23 14.6 7.45 12 7.45Z" fill="white"/><defs><linearGradient id="quick-max-grad" x1="3" y1="3" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#168BFF"/><stop offset="0.52" stop-color="#4265F6"/><stop offset="1" stop-color="#8150EB"/></linearGradient></defs></svg>
           </span>
@@ -2860,7 +2872,7 @@
           <b id="quick-title">Важно</b>
         </div>
         <p>В связи с удалением MAX из App Store в России push-уведомления не работают, поэтому время ответа увеличено.</p>
-        <a class="quick-notice-go" href="https://max.ru/u/f9LHodD0cOJCZR0McV7Jx5h3b6WL15DwyQjL7CHUQMZbvvqAfjYeXVx3_w4" target="_blank" rel="noopener" data-quick-max-go>Перейти в MAX</a>
+        <a class="quick-notice-go" href="https://max.ru/u/f9LHodD0cOJCZR0McV7Jx5h3b6WL15DwyQjL7CHUQMZbvvqAfjYeXVx3_w4" target="_blank" rel="noopener" data-quick-max-go data-metrika="quick_max_go">Перейти в MAX</a>
         <button class="quick-notice-back" type="button" data-quick-back>Назад</button>
       </div>
     </div>
@@ -2877,6 +2889,7 @@
     var API_URL = window.YREKRUT_API || '';
     var BUILD = window.YREKRUT_BUILD || 'dev';
     var KEYS = { session: 'yarekrut_session', pending: 'yarekrut_pending', ref: 'yarekrut_ref', config: 'yarekrut_config', training: 'yarekrut_training_banner' };
+    var METRIKA_ID = 114160013;
     var STATUS = {
       draft: 'Черновик', processing: 'В обработке', rejected: 'Отклонена', accepted: 'Принята',
       departure: 'Выезд указан', photo_review: 'Фото на проверке', photo_rejected: 'Фото не принято',
@@ -2918,6 +2931,66 @@
     function legalUrl(value, fallback) {
       if (!value) return fallback;
       return String(value).replace(/^https?:\/\/(?:www\.)?za-edinstvo\.ru\//, 'https://yrekrut.ru/');
+    }
+
+    var METRIKA_TITLES = {
+      '': 'ЯРекрут — старт',
+      register: 'Регистрация',
+      'register-code': 'Регистрация — код',
+      login: 'Вход',
+      'login-code': 'Вход — код',
+      vacancies: 'Направления',
+      vacancy: 'Карточка направления',
+      requests: 'Заявки',
+      request: 'Заявка',
+      profile: 'Профиль',
+      help: 'Вопросы',
+      admin: 'Админка — заявки',
+      'admin-acts': 'Админка — акты',
+      'admin-dirs': 'Админка — направления',
+      'admin-request': 'Админка — заявка'
+    };
+    var metrikaFirstPage = true;
+    var metrikaLastUrl = '';
+    var metrikaInitialUrl = location.href;
+
+    function metrikaCall(method, first, second) {
+      if (typeof ym !== 'function') return;
+      try { ym(METRIKA_ID, method, first, second); } catch (error) {}
+    }
+
+    function metrikaGoal(name, params) {
+      if (name) metrikaCall('reachGoal', name, params);
+    }
+
+    function metrikaUser(id) {
+      metrikaCall('params', { user_id: id == null ? '' : String(id) });
+    }
+
+    function metrikaTrackPage(name) {
+      var url = location.href;
+      if (metrikaFirstPage) {
+        metrikaFirstPage = false;
+        if (url === metrikaInitialUrl) {
+          metrikaLastUrl = url;
+          return;
+        }
+        metrikaLastUrl = metrikaInitialUrl;
+      }
+      metrikaCall('hit', url, {
+        title: METRIKA_TITLES[name] || 'ЯРекрут',
+        referer: metrikaLastUrl || document.referrer
+      });
+      metrikaLastUrl = url;
+    }
+
+    function bindMetrikaGoals() {
+      document.addEventListener('click', function (event) {
+        var el = event.target && event.target.closest ? event.target.closest('[data-metrika]') : null;
+        if (!el) return;
+        var value = el.getAttribute('data-metrika-param');
+        metrikaGoal(el.getAttribute('data-metrika'), value ? { value: value } : undefined);
+      }, true);
     }
 
     var state = {
@@ -3170,6 +3243,7 @@
         banner.hidden = true;
         banner.classList.remove('is-visible');
       }
+      metrikaUser('');
     }
 
     function sameData(a, b) {
@@ -3204,6 +3278,7 @@
             profile: result.profile,
             questions: result.questions
           });
+          if (result.profile && result.profile.profile) metrikaUser(result.profile.profile.id);
         }
         state.booting = null;
         repaintCurrent();
@@ -3482,6 +3557,7 @@
       // Loaders live in later <script> blocks, so string names are resolved only when the route runs.
       var load = typeof spec.load === 'string' ? window[spec.load] : spec.load;
       if (load) load.apply(null, params);
+      metrikaTrackPage(name);
     }
 
     // Layout of every screen comes from the design's html.is-* classes.
@@ -3641,6 +3717,7 @@
         if (problem) return;
         busy($('button[type=submit]', form), api('sendRegisterCode', [data.email, data.fio, data.phone, true, true, readJson(KEYS.ref) || '']), 'Отправляем…')
           .then(function () {
+            metrikaGoal('registration_code_sent');
             setPending(data);
             slideTo('#/register-code');
           })
@@ -3657,6 +3734,7 @@
         var waiting = pending('login');
         busy($('button[type=submit]', form), api('sendLoginCode', [email]), 'Отправляем…')
           .then(function () {
+            metrikaGoal('login_code_sent');
             setPending({ purpose: 'login', email: email });
             slideTo('#/login-code');
           })
@@ -3689,6 +3767,7 @@
               if (purpose === 'register') writeJson(KEYS.ref, null);
               saveSession(result.token, result.role);
               markTrainingBannerPending();
+              metrikaGoal(purpose === 'register' ? 'registration_complete' : 'login_complete');
               bootstrap().catch(function () {});
               go(result.role === 'admin' ? '#/admin' : '#/vacancies', true);
             })
@@ -3758,7 +3837,7 @@
       var tags = [];
       if (item.hepatitis) tags.push(h('span', { class: 'tag', text: 'Гепатит' }));
       if (item.hiv) tags.push(h('span', { class: 'tag', text: 'Вич' }));
-      return h('a', { class: 'v-card', href: '#/vacancy/' + encodeURIComponent(item.gid) }, [
+      return h('a', { class: 'v-card', href: '#/vacancy/' + encodeURIComponent(item.gid), 'data-metrika': 'direction_open', 'data-metrika-param': item.title }, [
         h('div', { class: 'v-head' }, [h('h2', { text: item.title }), h('span', { class: 'v-go', 'aria-hidden': 'true', html: ICONS.chevron })]),
         item.stopped ? h('div', { class: 'v-stop-row' }, [h('span', { class: 'v-stop', text: item.statusLabel || 'Временно стоп' })]) : null,
         h('div', { class: 'v-meta' }, [
@@ -3868,6 +3947,7 @@
       }
       var addLink = $('#dir-add');
       if (addLink) {
+        addLink.setAttribute('data-metrika-param', item.title);
         if (item.stopped) {
           addLink.classList.add('is-disabled');
           addLink.setAttribute('aria-disabled', 'true');
@@ -4533,6 +4613,7 @@
         delete result.ok;
         delete result.version;
         remember({ profile: result });
+        if (result.profile) metrikaUser(result.profile.id);
       }).then(function () {
         setState(target + '-state');
         if (state.current === target && state.profile) PROFILE_PAINTERS[target](state.profile);
@@ -4545,6 +4626,7 @@
       delete result.ok;
       delete result.version;
       remember({ profile: result });
+      if (result.profile) metrikaUser(result.profile.id);
       return result;
     }
 
@@ -4558,22 +4640,22 @@
     function paintProfile(p) {
       var nodes = [
         h('h1', { class: 'list-title', id: 'profile-name', text: p.profile.fio }),
-        h('a', { class: 'training-card', href: LINKS.training, target: '_blank', rel: 'noopener' }, [
+        h('a', { class: 'training-card', href: LINKS.training, target: '_blank', rel: 'noopener', 'data-metrika': 'profile_training_open' }, [
           h('b', { text: 'Обучение рекрутингу' }),
           h('span', { text: 'Раскачай поиск с нуля до первого подписания' })
         ]),
         h('p', { class: 'channels-label', text: 'НАШИ КАНАЛЫ' }),
-        h('a', { class: 'channel', href: LINKS.telegram, target: '_blank', rel: 'noopener' }, [
+        h('a', { class: 'channel', href: LINKS.telegram, target: '_blank', rel: 'noopener', 'data-metrika': 'profile_telegram' }, [
           h('span', { class: 'tg', 'aria-hidden': 'true', html: ICONS.telegram }),
           h('b', { text: 'Telegram' }),
           h('span', { class: 'v-go', 'aria-hidden': 'true', html: ICONS.chevron })
         ]),
-        h('a', { class: 'channel', href: LINKS.max, target: '_blank', rel: 'noopener' }, [
+        h('a', { class: 'channel', href: LINKS.max, target: '_blank', rel: 'noopener', 'data-metrika': 'profile_max' }, [
           h('span', { class: 'mx', 'aria-hidden': 'true', html: ICONS.max }),
           h('b', { text: 'MAX' }),
           h('span', { class: 'v-go', 'aria-hidden': 'true', html: ICONS.chevron })
         ]),
-        h('button', { class: 'profile-logout', type: 'button', text: 'Выйти', onclick: logout })
+        h('button', { class: 'profile-logout', type: 'button', text: 'Выйти', onclick: logout, 'data-metrika': 'logout' })
       ];
       fill($('#profile-body'), nodes);
     }
@@ -5115,6 +5197,7 @@
       bindRecruiter();
       bindQuick();
       bindAdmin();
+      bindMetrikaGoals();
       $('#viewer-close').addEventListener('click', closeViewer);
       document.addEventListener('keydown', function (event) {
         if (event.key !== 'Escape') return;
